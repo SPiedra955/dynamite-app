@@ -2,16 +2,7 @@
 from flask_admin.contrib.sqla import ModelView
 import os
 from flask_admin import Admin
-from .models import db,
-User,
-Product,
-Order,
-OrderItem,
-SubscriptionPlan,
-Subscription,
-Payment,
-Cart,
-CartItem
+from .models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
 
 
 def setup_admin(app):
