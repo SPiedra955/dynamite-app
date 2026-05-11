@@ -123,12 +123,12 @@ def auth():
 # ADD A NEW PRODUCT TO THE BBDD
 
 @api.route("/products", methods=["POST"])
-@jwt_required()
+@jwt_required()  # PROTECTING ROUTE STEP 1
 def new_product():
-    user_id = get_jwt_identity()
-    user = db.session.get(User, user_id)
+    user_id = get_jwt_identity()  # PROTECTING ROUTE STEP 2
+    user = db.session.get(User, user_id)  # PROTECTING ROUTE
 
-    if user.role != "admin":
+    if user.role != "admin":  # PROTECTING ROUTE STEP 3
         return jsonify({"success": False, "msg": "forbidden"}), 403
 
     body = request.get_json()
@@ -151,19 +151,19 @@ def new_product():
 
 
 @api.route("/product/<int:id>", methods=["GET"])
-@jwt_required()
+# @jwt_required()
 def get_product(id):
-    user_id = get_jwt_identity()
-    user = db.session.get(User, user_id)
+   # user_id = get_jwt_identity()
+    # user = db.session.get(User, user_id)
 
-    if user.role != "admin":
-        return jsonify({"success": False, "msg": "forbidden"}), 403
+   # if user.role != "admin":
+    #    return jsonify({"success": False, "msg": "forbidden"}), 403
 
     product = db.session.get(Product, id)
-    
+
     if not product:
         return jsonify({"success": False, "msg": "not found"}), 404
-    
+
     return jsonify({"success": True, "data": product.serialize()}), 200
 
 # GET ALL PRODUCTS
@@ -171,7 +171,6 @@ def get_product(id):
 
 @api.route("/products", methods=["GET"])
 def get_all_products():
-    print("HIT GET /products")
     products = db.session.execute(select(Product)).scalars().all()
     transform = [product.serialize() for product in products]
     return jsonify({"success": True, "data": transform}), 200
@@ -189,10 +188,10 @@ def modify_product(id):
         return jsonify({"success": False, "msg": "forbidden"}), 403
 
     product = db.session.get(Product, id)
-    
+
     if not product:
         return jsonify({"success": False, "data": "not found"}), 404
-    
+
     body = request.get_json()
 
     product.name = body["name"] if body["name"] else product.name
