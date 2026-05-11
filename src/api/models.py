@@ -1,8 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import (String,Boolean,ForeignKey,DateTime,Numeric)
-from sqlalchemy.orm import (Mapped,mapped_column,relationship)
+from sqlalchemy import (String, Boolean, ForeignKey, DateTime, Numeric)
+from sqlalchemy.orm import (Mapped, mapped_column, relationship)
 
 db = SQLAlchemy()
 
@@ -31,7 +31,7 @@ class User(db.Model):
     )
 
     role: Mapped[str] = mapped_column(
-        String(20),
+        String(20), default='user',
         nullable=False
     )
 
@@ -93,7 +93,7 @@ class User(db.Model):
             "objective": self.objective,
             "photo": self.photo,
             "is_active": self.is_active,
-            "created_at": self.created_at
+            "created_at": self.created_at.isoformat()
         }
 
 
