@@ -166,6 +166,7 @@ def get_product(id):
 
     return jsonify({"success": True, "data": product.serialize()}), 200
 
+
 # GET ALL PRODUCTS
 
 
