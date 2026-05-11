@@ -1,5 +1,8 @@
-export const initialStore=()=>{
-  return{
+export const initialStore = () => {
+  return {
+    /* WE USE LOCALSTORAGE TO SAVE THE TOKEN */
+    auth: localStorage.getItem("token") || false,
+    user: null,
     message: null,
     todos: [
       {
@@ -17,16 +20,32 @@ export const initialStore=()=>{
 }
 
 export default function storeReducer(store, action = {}) {
-  switch(action.type){
+  switch (action.type) {
+
+    /* LOGIN/REGISTER CASES */
+
+    case "logout":
+      return {
+        ...store,
+        auth: false,
+        user: null,
+      };
+    case "auth":
+      return {
+        ...store,
+        auth: true,
+        user: action.payload.user,
+      };
+
     case 'set_hello':
       return {
         ...store,
         message: action.payload
       };
-      
+
     case 'add_task':
 
-      const { id,  color } = action.payload
+      const { id, color } = action.payload
 
       return {
         ...store,
@@ -34,5 +53,5 @@ export default function storeReducer(store, action = {}) {
       };
     default:
       throw Error('Unknown action.');
-  }    
+  }
 }
