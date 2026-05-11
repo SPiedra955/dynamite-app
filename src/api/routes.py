@@ -169,6 +169,7 @@ def get_product(id):
 # GET ALL PRODUCTS
 
 
+
 @api.route("/products", methods=["GET"])
 def get_all_products():
     products = db.session.execute(select(Product)).scalars().all()
