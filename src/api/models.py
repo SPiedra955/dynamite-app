@@ -1,12 +1,23 @@
 from datetime import datetime
 from decimal import Decimal
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import (String, Boolean, ForeignKey, DateTime, Numeric)
+from sqlalchemy import (String, Boolean, ForeignKey, DateTime, Numeric,Enum)
 from sqlalchemy.orm import (Mapped, mapped_column, relationship)
+import enum
 
 db = SQLAlchemy()
 
 
+# ENUMS
+
+class DietExerciseType(enum.Enum):
+    diet ="diet"
+    workout = "workout"
+class PaymentStatus(enum.Enum):
+    pending = "pending"
+    cancelled = "cancelled" 
+    paid = "paid"
+    refunded = "refunded"   
 # USERS
 
 class User(db.Model):
@@ -70,6 +81,8 @@ class User(db.Model):
         "Subscription",
         back_populates="user"
     )
+
+    myplans = relationship("MyPlan", back_populates = "user")
 
     payments = relationship(
         "Payment",
@@ -280,6 +293,10 @@ class SubscriptionPlan(db.Model):
         "Subscription",
         back_populates="plan"
     )
+    myplans = relationship(
+        "MyPlan",
+        back_populates="plan"
+    )
 
     def serialize(self):
         return {
@@ -307,19 +324,15 @@ class Subscription(db.Model):
         nullable=False
     )
 
-    status: Mapped[str] = mapped_column(
-        String(20),
+    active: Mapped[bool]= mapped_column(
+        Boolean,
+        default= False,
         nullable=False
     )
-
-    start_date: Mapped[datetime] = mapped_column(
+    
+    cancel_day : Mapped[datetime] = mapped_column(
         DateTime,
-        nullable=False
-    )
-
-    end_date: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=False
+        nullable=True
     )
 
     # Relationships
@@ -343,10 +356,50 @@ class Subscription(db.Model):
             "id": self.id,
             "user_id": self.user_id,
             "plan_id": self.plan_id,
-            "status": self.status,
-            "start_date": self.start_date,
-            "end_date": self.end_date
+            "active": self.active,
+            "cancel_day": self.cancel_day
         }
+# MYPLANS
+
+class MyPlan(db.Model):
+    __tablename__="myplans"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False)
+    plan_id:Mapped[int] = mapped_column(
+        ForeignKey("subscription_plans.id"),
+        nullable=False
+    )
+    tipo_plan : Mapped[DietExerciseType] = mapped_column(
+        Enum(DietExerciseType),
+        nullable=True)
+    is_diet : Mapped[bool] = mapped_column(
+        Boolean,
+        default = False,
+        nullable = False)
+    is_workout : Mapped [bool] = mapped_column(
+        Boolean,
+        default =False,
+        nullable=False
+    )
+# Relationships
+    user = relationship("User", back_populates="myplans")
+    plan = relationship("SubscriptionPlan", back_populates = "myplans")
+
+
+    def serialize(self):
+        return {
+              "id": self.id,
+            "user_id": self.user_id,
+            "plan_id": self.plan_id,
+            "tipo_plan": self.tipo_plan.value if self.tipo_plan else None,
+            "is_diet": self.is_diet,
+            "is_workout": self.is_workout
+        }
+
 
 
 # PAYMENTS
@@ -381,8 +434,9 @@ class Payment(db.Model):
         nullable=False
     )
 
-    status: Mapped[str] = mapped_column(
-        String(20),
+    status: Mapped[PaymentStatus] = mapped_column(
+        Enum(PaymentStatus),
+        default = PaymentStatus.pending,
         nullable=False
     )
 
@@ -416,7 +470,7 @@ class Payment(db.Model):
             "subscription_id": self.subscription_id,
             "amount": float(self.amount),
             "payment_method": self.payment_method,
-            "status": self.status,
+            "status": self.status.value,
             "created_at": self.created_at
         }
 
