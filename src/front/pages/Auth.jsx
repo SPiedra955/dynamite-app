@@ -26,9 +26,10 @@ const Auth = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
+
             const data = await authService.auth(formData);
 
             dispatch({
@@ -42,10 +43,13 @@ const Auth = () => {
             });
 
             navigate("/dashboard");
+
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
-    };
+
+    }
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -74,6 +78,10 @@ const Auth = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
+                            minLength={5}
+                            maxLength={100}
+                            pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                            title="Enter a valid email address"
                         />
                     </div>
 
@@ -87,6 +95,10 @@ const Auth = () => {
                             value={formData.password}
                             onChange={handleChange}
                             required
+                            minLength={4}
+                            maxLength={20}
+                            pattern="^[A-Za-z0-9]{4,20}$"
+                            title="Password must contain letters or numbers"
                         />
                     </div>
 
@@ -102,6 +114,10 @@ const Auth = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
+                                    minLength={2}
+                                    maxLength={50}
+                                    pattern="^[A-Za-zÀ-ÿ\s]+$"
+                                    title="Only letters are allowed"
                                 />
                             </div>
 
@@ -114,6 +130,8 @@ const Auth = () => {
                                     value={formData.age}
                                     onChange={handleChange}
                                     required
+                                    min={10}
+                                    max={100}
                                 />
                             </div>
 
@@ -126,6 +144,9 @@ const Auth = () => {
                                     value={formData.weight}
                                     onChange={handleChange}
                                     required
+                                    min={20}
+                                    max={300}
+                                    step="0.1"
                                 />
                             </div>
 
@@ -138,6 +159,8 @@ const Auth = () => {
                                     value={formData.height}
                                     onChange={handleChange}
                                     required
+                                    min={50}
+                                    max={250}
                                 />
                             </div>
 
@@ -150,6 +173,8 @@ const Auth = () => {
                                     value={formData.objective}
                                     onChange={handleChange}
                                     required
+                                    minLength={3}
+                                    maxLength={100}
                                 />
                             </div>
                         </>
