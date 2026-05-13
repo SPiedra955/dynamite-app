@@ -376,14 +376,9 @@ class MyPlan(db.Model):
     tipo_plan : Mapped[DietExerciseType] = mapped_column(
         Enum(DietExerciseType),
         nullable=True)
-    is_diet : Mapped[bool] = mapped_column(
-        Boolean,
-        default = False,
-        nullable = False)
-    is_workout : Mapped [bool] = mapped_column(
-        Boolean,
-        default =False,
-        nullable=False
+    plan_data: Mapped[dict] = mapped_column(
+       db.JSON(),
+        nullable=True
     )
 # Relationships
     user = relationship("User", back_populates="myplans")
@@ -396,8 +391,7 @@ class MyPlan(db.Model):
             "user_id": self.user_id,
             "plan_id": self.plan_id,
             "tipo_plan": self.tipo_plan.value if self.tipo_plan else None,
-            "is_diet": self.is_diet,
-            "is_workout": self.is_workout
+            "plan_data": getattr (self,"plan_data",None)
         }
 
 
