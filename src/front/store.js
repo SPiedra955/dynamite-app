@@ -22,7 +22,15 @@ export const initialStore = () => {
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
 
-    /* LOGIN/REGISTER CASES */
+    /* GET PRODUCTS */
+
+    case 'getProducts':
+      return {
+        ...store,
+        people: action.payload
+      };
+
+    /* LOGIN/REGISTER */
 
     case "logout":
       localStorage.removeItem("token");
@@ -33,7 +41,7 @@ export default function storeReducer(store, action = {}) {
         auth: false,
         user: null,
       };
-      
+
     case "auth":
       localStorage.setItem("user", JSON.stringify(action.payload.user));
 

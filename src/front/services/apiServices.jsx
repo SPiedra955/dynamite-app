@@ -1,7 +1,7 @@
-const authService = {};
+const services = {};
 const url = import.meta.env.VITE_BACKEND_URL;
 
-authService.auth = async (formData) => {
+services.auth = async (formData) => {
     try {
         const resp = await fetch(url + "/api/auth", {
             method: "POST",
@@ -36,11 +36,11 @@ authService.auth = async (formData) => {
     }
 };
 
-authService.logout = () => {
+services.logout = () => {
     localStorage.removeItem("token");
 };
 
-authService.getMe = async () => {
+services.getMe = async () => {
     try {
         const resp = await fetch(url + "/api/me", {
             method: "GET",
@@ -57,4 +57,23 @@ authService.getMe = async () => {
     }
 };
 
-export default authService;
+/* GET PRODUCTS */
+
+services.getProducts = async () => {
+    try {
+        const resp = await fetch(`${url}/api/products`);
+
+        if (!resp.ok) {
+            throw new Error("Something went wrong");
+        }
+
+        const data = await resp.json();
+
+        return data.results || data; 
+
+    } catch (error) {
+        console.error("getProducts error:", error);
+        return [];
+    }
+};
+export default services;

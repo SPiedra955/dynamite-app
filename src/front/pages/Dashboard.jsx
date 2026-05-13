@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import authService from "../services/authServices";
+import apiServices from "../services/apiServices";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -15,7 +15,7 @@ const Dashboard = () => {
 
 
         if (token && !store.user) {
-            authService.getMe().then((data) =>
+            apiServices.getMe().then((data) =>
                 dispatch({
                     type: "auth",
                     payload: {
@@ -28,7 +28,7 @@ const Dashboard = () => {
     }, []);
 
     const handleLogout = () => {
-        authService.logout();
+        apiServices.logout();
         dispatch({
             type: "logout",
         });

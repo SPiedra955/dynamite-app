@@ -1,5 +1,5 @@
 import { useState } from "react";
-import authService from "../services/authServices";
+import authService from "../services/apiServices";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
 
