@@ -27,7 +27,7 @@ export default function storeReducer(store, action = {}) {
     case 'getProducts':
       return {
         ...store,
-        people: action.payload
+        products: action.payload
       };
 
     /* LOGIN/REGISTER */
