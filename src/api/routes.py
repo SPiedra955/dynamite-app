@@ -164,10 +164,9 @@ def get_product(id):
     if not product:
         return jsonify({"success": False, "msg": "not found"}), 404
 
-    return jsonify({"success": True, "data": product.serialize()}), 200
+        return jsonify({"success": True, "data": product.serialize()}), 200
 
 # GET ALL PRODUCTS
-
 
 
 @api.route("/products", methods=["GET"])
