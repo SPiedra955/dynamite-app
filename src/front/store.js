@@ -1,8 +1,8 @@
 export const initialStore = () => {
   return {
     /* WE USE LOCALSTORAGE TO SAVE THE TOKEN */
-    auth: localStorage.getItem("token") || false,
-    user: null,
+    auth: !!localStorage.getItem("token"),
+    user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
     todos: [
       {
@@ -25,12 +25,18 @@ export default function storeReducer(store, action = {}) {
     /* LOGIN/REGISTER CASES */
 
     case "logout":
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
       return {
         ...store,
         auth: false,
         user: null,
       };
+      
     case "auth":
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
+
       return {
         ...store,
         auth: true,

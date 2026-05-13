@@ -1,20 +1,20 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify
 from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from api.blueprint import api
+from api.api_routes.products import *
 
-api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
 
-from api.api_routes.products import *
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():

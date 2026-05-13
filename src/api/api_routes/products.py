@@ -1,5 +1,4 @@
-from api.routes import api
-
+from api.blueprint import api
 
 @api.route('/products')
 def get_products ():

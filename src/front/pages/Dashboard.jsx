@@ -8,7 +8,13 @@ const Dashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (localStorage.getItem("token") && !store.user) {
+        const token = localStorage.getItem("token");
+
+
+        if (!token) return navigate("/");
+
+
+        if (token && !store.user) {
             authService.getMe().then((data) =>
                 dispatch({
                     type: "auth",
@@ -19,8 +25,7 @@ const Dashboard = () => {
             );
         }
 
-        if (!localStorage.getItem("token")) navigate("/");
-    }, [store.auth]);
+    }, []);
 
     const handleLogout = () => {
         authService.logout();
@@ -34,7 +39,7 @@ const Dashboard = () => {
         <div className="container d-flex justify-content-center align-items-center vh-100">
             <div className="card shadow p-4 text-center" style={{ width: "420px" }}>
 
-                <h2 className="mb-3">Private Area 🔒</h2>
+                <h2 className="mb-3">Private Area</h2>
 
                 <p className="text-muted mb-4">
                     You are logged in as:
