@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: faa0646f3c49
+Revision ID: be4a743b1bce
 Revises: 
-Create Date: 2026-05-13 16:36:30.024105
+Create Date: 2026-05-14 10:30:48.333637
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'faa0646f3c49'
+revision = 'be4a743b1bce'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,10 +41,10 @@ def upgrade():
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(length=255), nullable=False),
     sa.Column('role', sa.String(length=20), nullable=False),
-    sa.Column('age', sa.Integer(), nullable=False),
-    sa.Column('weight', sa.Float(), nullable=False),
-    sa.Column('height', sa.Float(), nullable=False),
-    sa.Column('objective', sa.String(length=50), nullable=False),
+    sa.Column('age', sa.Integer(), nullable=True),
+    sa.Column('weight', sa.Float(), nullable=True),
+    sa.Column('height', sa.Float(), nullable=True),
+    sa.Column('objective', sa.String(length=50), nullable=True),
     sa.Column('photo', sa.String(length=255), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -64,8 +64,7 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('plan_id', sa.Integer(), nullable=False),
     sa.Column('tipo_plan', sa.Enum('diet', 'workout', name='dietexercisetype'), nullable=True),
-    sa.Column('is_diet', sa.Boolean(), nullable=False),
-    sa.Column('is_workout', sa.Boolean(), nullable=False),
+    sa.Column('plan_data', sa.JSON(), nullable=True),
     sa.ForeignKeyConstraint(['plan_id'], ['subscription_plans.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
