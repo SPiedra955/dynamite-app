@@ -46,15 +46,15 @@ class User(db.Model):
         nullable=False
     )
 
-    age: Mapped[int] = mapped_column(nullable=False)
+    age: Mapped[int] = mapped_column(nullable=True)
 
-    weight: Mapped[float] = mapped_column(nullable=False)
+    weight: Mapped[float] = mapped_column(nullable=True)
 
-    height: Mapped[float] = mapped_column(nullable=False)
+    height: Mapped[float] = mapped_column(nullable=True)
 
     objective: Mapped[str] = mapped_column(
         String(50),
-        nullable=False
+        nullable=True
     )
 
     photo: Mapped[str] = mapped_column(
