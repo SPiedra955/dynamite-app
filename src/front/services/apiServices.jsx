@@ -69,7 +69,7 @@ services.getProducts = async () => {
 
         const data = await resp.json();
 
-        return data.results || data; 
+        return data.results || data;
 
     } catch (error) {
         console.error("getProducts error:", error);

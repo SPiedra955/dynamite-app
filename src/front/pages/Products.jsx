@@ -1,8 +1,12 @@
 import { useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import apiServices from "../services/apiServices";
 import { useNavigate } from "react-router-dom";
 import services from "../services/apiServices";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("pk_test_51TOOvNGlrpZscypFXXr4oPPJxde2nN4vYAGJMt23hJJm2mssRDM8eThgLdA2YrdMQatc7LYMR1nUImKOc9MtRl1M003eg2fI64");
+
+const url = import.meta.env.VITE_BACKEND_URL;
 
 const Products = () => {
     const { store, dispatch } = useGlobalReducer();
@@ -19,6 +23,33 @@ const Products = () => {
     }, [])
 
     const prod = store.products || [];
+
+    const handleBuy = async (product) => {
+        try {
+            const res = await fetch(url + "/api/create-checkout-session", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    product_name: product.name,
+                    amount: Math.round(product.price * 100), // Stripe usa céntimos
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!data.url) {
+                console.error("Error creando sesión Stripe", data);
+                return;
+            }
+
+            window.location.href = data.url;
+
+        } catch (error) {
+            console.error("Error en pago:", error);
+        }
+    };
 
     return (
         <div className="container py-4">
@@ -40,7 +71,7 @@ const Products = () => {
                             <p className="fw-bold">{product?.price} €</p>
                             <button
                                 className="btn btn-success mt-auto"
-                                onClick={() => console.log("Comprar:", product)}
+                                onClick={() => handleBuy(product)}
                             >
                                 BUY
                             </button>

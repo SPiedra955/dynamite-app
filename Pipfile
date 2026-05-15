@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-swagger = "*"
@@ -21,6 +20,8 @@ sqlalchemy = "*"
 werkzeug = "*"
 flask-cors = "*"
 flask-jwt-extended = "*"
+stripe = "*"
+flask = "*"
 
 [requires]
 python_version = "3.13"

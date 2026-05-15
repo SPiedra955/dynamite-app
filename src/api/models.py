@@ -1,8 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import (String, Boolean, ForeignKey, DateTime, Numeric)
-from sqlalchemy.orm import (Mapped, mapped_column, relationship)
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+from sqlalchemy import (String, Boolean, ForeignKey, DateTime, Numeric) # type: ignore
+from sqlalchemy.orm import (Mapped, mapped_column, relationship) # type: ignore
 
 db = SQLAlchemy()
 

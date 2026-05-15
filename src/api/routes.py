@@ -1,16 +1,16 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify # type: ignore
 from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from sqlalchemy import select
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from sqlalchemy import select # type: ignore
+from werkzeug.security import generate_password_hash, check_password_hash # type: ignore
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required # type: ignore
 from api.blueprint import api
 from api.api_routes.products import *
-
+from api.api_routes.payment import *
 
 # Allow CORS requests to this API
 CORS(api)
@@ -119,4 +119,3 @@ def auth():
             "success": False,
             "data": "internal server error"
         }), 500
-
