@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import Tienda from "./pages/Tienda";
 import Planes_de_suscripcion from "./pages/Planes_de_suscripcion";
+import Encuesta from "./pages/Encuesta";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +34,7 @@ export const router = createBrowserRouter(
       <Route path="/authentication" element={<Auth />} />
       <Route path="/planes_de_suscripcion" element={<Planes_de_suscripcion />} />
       <Route path="/tienda" element={<Tienda />} />
+      <Route path="/encuesta" element={<Encuesta />} />
 
     </Route>
   )

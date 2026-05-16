@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
-const Planes_de_suscripcion = () => {
+const Encuesta = () => {
   const { store, dispatch } = useGlobalReducer();
-  return 
-  <div className="bg-dark text-light">planes de suscripcion</div>;
+  return <div>Estas son las preguntas para generar un prompt</div>;
 };
 
-export default Planes_de_suscripcion;
+export default Encuesta;
