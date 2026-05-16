@@ -11,6 +11,8 @@ import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
+import Tienda from "./pages/Tienda";
+import Planes_de_suscripcion from "./pages/Planes_de_suscripcion";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +31,8 @@ export const router = createBrowserRouter(
       <Route path="/demo" element={<Demo />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/authentication" element={<Auth />} />
+      <Route path="/planes_de_suscripcion" element={<Planes_de_suscripcion />} />
+      <Route path="/tienda" element={<Tienda />} />
 
     </Route>
   )
