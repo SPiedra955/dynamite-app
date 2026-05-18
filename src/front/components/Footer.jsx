@@ -1,5 +1,5 @@
 export const Footer = () => (
-	<footer className="footer mt-auto py-4 bg-dark">
+	<footer className="footer mt-auto py-4 bg-black">
   <div className="container">
     <div className="row text-center text-md-start">
       {/* Primera columna: Logo (Ocupa ancho completo en móvil, 3 columnas de 12 en pantallas medianas y superiores) */}
