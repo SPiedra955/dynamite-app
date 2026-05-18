@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify
-from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
+from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem, MyPlan, DietExerciseType,PaymentStatus
 from sqlalchemy import select
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from api.blueprint import api
 from werkzeug.security import generate_password_hash
 from datetime import datetime
 
-# GET ALL USERS
+# ── USUARIO ───────────────────────────────────────────────────────────────────
 
+# GET ALL USERS
 
 @api.route("/users", methods=['GET'])
 def get_all_users():
@@ -220,22 +221,22 @@ def create_order():
 
 #  Crea el pedido con el total calculado
         new_order = Order(
-        user_id=body['user_id'],
-        total_price=total,
-        status="pending")
+            user_id=body['user_id'],
+            total_price=total,
+            status="pending")
         db.session.add(new_order)
         db.session.flush()
 #  crea los order items y quita del stock
         for item_data in order_items:
-         order_item = OrderItem(
-         order_id=new_order.id,
-         product_id=item_data['product'].id,
-         quantity=item_data['quantity'],
-         price=item_data['price']
-    )
+            order_item = OrderItem(
+                order_id=new_order.id,
+                product_id=item_data['product'].id,
+                quantity=item_data['quantity'],
+                price=item_data['price']
+            )
         item_data['product'].stock -= item_data['quantity']
         db.session.add(order_item)
-        
+
         for item in cart.cart_items:
             db.session.delete(item)
 
@@ -244,61 +245,63 @@ def create_order():
         return jsonify({"success": True, "data": new_order.serialize()}), 200
 # ── PLANES DE SUSCRIPCIÓN ─────────────────────────────────────────────────────
 
-@api.route('/subscription-plans', methods=['GET'])
 
+@api.route('/subscription-plans', methods=['GET'])
 def get_subscription_plans():
-    plans= db.session.execute(select(SubscriptionPlan)).scalars().all()
+    plans = db.session.execute(select(SubscriptionPlan)).scalars().all()
     transform = [plan.serialize() for plan in plans]
     return jsonify({"success": True, "data": transform}), 200
-
-
 
 
 # GET SUBSCRIPTION PLAN
 @api.route('/subscription-plans/<int:user_id>', methods=['GET'])
 def get_subscription_plan(plan_id):
-    plan = db.session.get(SubscriptionPlan,plan_id)
+    plan = db.session.get(SubscriptionPlan, plan_id)
 
     if not plan:
-         return jsonify({"success": False, "msg": "not found"}), 404
- 
+        return jsonify({"success": False, "msg": "not found"}), 404
+
     return jsonify({"success": True, "data": plan.serialize()}), 200
 
 # CREATE SUBSCRIPTION PLAN
-@api.route('/subscription-plans',methods=['POST'])
 
+
+@api.route('/subscription-plans', methods=['POST'])
 def create_subscription_plan():
-    body=request.get_json():
+    body = request.get_json()
 
-    if not body['name'] or not body ['price']:
-        return jsonify({"sucess":True, "msg":"missing data"}), 403
-    
-    new_plan= SubscriptionPlan(
+    if not body['name'] or not body['price']:
+        return jsonify({"sucess": True, "msg": "missing data"}), 403
+
+    new_plan = SubscriptionPlan(
         name=body['name'],
         price=body['price'],
         description=body.get('description')
     )
     db.session.add(new_plan)
     db.session.commit()
-    return jsonify({"sucess":True,"data": new_plan.serialize()}),200
+    return jsonify({"sucess": True, "data": new_plan.serialize()}), 200
 
-# UPDATE SUBSCRIPTION PLAN 
-@api.route ('/update/subscription-plan/<int:plan_id>',methods=['PUT'])
+# UPDATE SUBSCRIPTION PLAN
+
+
+@api.route('/update/subscription-plan/<int:plan_id>', methods=['PUT'])
 def update_subscription_plan(plan_id):
-    plan= db.session.get(SubscriptionPlan,plan_id)
+    plan = db.session.get(SubscriptionPlan, plan_id)
 
     if not plan:
-         return jsonify({"success": False, "msg": "not found"}), 404
-    
-    body=request.get_json()
+        return jsonify({"success": False, "msg": "not found"}), 404
+
+    body = request.get_json()
     plan.name = body.get('name', plan.name)
-    plan.price = body.get('price',plan.price)
-    plan.description = body.get ('description', plan.description)
+    plan.price = body.get('price', plan.price)
+    plan.description = body.get('description', plan.description)
 
     db.session.commit()
-    return jsonify ({"success": True, "data": plan.serialize()}), 200
+    return jsonify({"success": True, "data": plan.serialize()}), 200
 
 # DELETE SUBS PLAN
+
 
 @api.route('/delete/subscripton-plan/<int:item_id>', methods=['DELETE'])
 def delete_subscription_plan(plan_id):
@@ -314,62 +317,225 @@ def delete_subscription_plan(plan_id):
 # ── SUSCRIPCIONES ─────────────────────────────────────────────────────────────
 
 # GET ALL SUBSCRIPTIONS
-@api.route('/subscriptions', methods=['GET'])
 
+
+@api.route('/subscriptions', methods=['GET'])
 def get_subscriptions():
-    subs= db.session.execute(select(SubscriptionPlan)).scalars().all()
+    subs = db.session.execute(select(SubscriptionPlan)).scalars().all()
     transform = [sub.serialize() for sub in subs]
     return jsonify({"success": True, "data": transform}), 200
 
-# GET SUBSCRIPTIONS BY USER 
+# GET SUBSCRIPTIONS BY USER
+
 
 @api.route('/orders/<int:user_id>', methods=['GET'])
 def get_user_orders(user_id):
-# execute() porque buscamos por user_id que NO es la primary key
+    # execute() porque buscamos por user_id que NO es la primary key
     subs = db.session.execute(select(Subscription).where(
         Subscription.user_id == user_id)).scalars().all()
     transform = [sub.serialize() for sub in subs]
     return jsonify({"success": True, "data": transform}), 200
 
 # CREATE SUBSCRIPTION
+
+
 @api.route('/subscriptions', methods=['POST'])
 def create_subscription():
     body = request.get_json()
 
-    if  not body['user_id'] or not body ['plan_id']:
-        return jsonify ({"success": False, "msg": "missing data"}), 403
-    
-    plan = db.session.get (SubscriptionPlan,body['plan_id'])
+    if not body['user_id'] or not body['plan_id']:
+        return jsonify({"success": False, "msg": "missing data"}), 403
+
+    plan = db.session.get(SubscriptionPlan, body['plan_id'])
 
     if not plan:
-        return jsonify ({"success": False, "msg": "plan not found"}), 404
+        return jsonify({"success": False, "msg": "plan not found"}), 404
     # Buscamos en la tabla subscriptions
-    create = db.session.execute(select(Subscription).where(Subscription.user_id== body['user_id'],
-                                                           Subscription.active==True)).scalar_one_or_none() 
+    create = db.session.execute(select(Subscription).where(Subscription.user_id == body['user_id'],
+                                                           Subscription.active == True)).scalar_one_or_none()
     # # devuelve un objeto o None si no encuentra nada
-                                                           
+
     if create:
-        return jsonify({"success":False,"msg": "already has an active subscription"}),400
+        return jsonify({"success": False, "msg": "already has an active subscription"}), 400
 
     new_subscription = Subscription(
         user_id=body['user_id'],
-        plan_id =body ['`plan_id'],
-        active = True
+        plan_id=body['`plan_id'],
+        active=True
     )
     db.session.add(new_subscription)
-    db.session.commit ()
-    return jsonify({"sucess":True,"data": new_subscription.serialize()}),200 
+    db.session.commit()
+    return jsonify({"sucess": True, "data": new_subscription.serialize()}), 200
 
 
 # CANCEL SUBSCRIPTION
 
-@api.route('/cancel/subscription/<int:subscription_id>',methods=['PUT'])
+@api.route('/cancel/subscription/<int:subscription_id>', methods=['PUT'])
 def cancel_subscription(subscription_id):
-    subscription= db.session.get (Subscription,subscription_id)
+    subscription = db.session.get(Subscription, subscription_id)
     if not subscription:
-        return jsonify ({"success": False, "msg": "not found"}), 404
+        return jsonify({"success": False, "msg": "not found"}), 404
     subscription.active = False
     subscription.cancel_day = datetime.utcnow()
 
-    db.session.commit ()
+    db.session.commit()
     return jsonify({"success": True, "data": subscription.serialize()}), 200
+
+# ── MY PLANS ──────────────────────────────────────────────────────────────────
+
+# GET ALL MY PLANS
+
+
+@api.route('/myplans', methods=['GET'])
+def get_myplans():
+    plans = db.session.execute(select(MyPlan)).scalars().all()
+    transform = [plan.serialize() for plan in plans]
+    return jsonify({"success": True, "data": transform}), 200
+
+# GET ONE PLAN BY USER
+
+
+@api.route('/myplans/<int:user_id>', methods=['GET'])
+def get_user_myplans(user_id):
+    # execute() porque buscamos por user_id que NO es la primary key
+    plans = db.session.execute(select(MyPlan).where(
+        MyPlan.user_id == user_id)).scalars().all()
+    transform = [plan.serialize() for plan in plans]
+    return jsonify({"success": True, "data": transform}), 200
+
+# CREATE PLAN
+# En el endpoint POST conviertes el string que llega del frontend al enum
+
+
+@api.route('/myplans', methods=['POST'])
+def create_myplan():
+    body = request.get_json()
+
+    if not body['user_id'] or not body['plan_id']:
+        return jsonify({"sucess": True, "msg": "missing data"}), 403
+    # Lo convertimos al enum
+    # llega "diet" desde el frontend
+    try:
+        tipo = DietExerciseType(body['tipo_plan'])
+    except ValueError:
+        return jsonify({"success": False, "msg": "tipo_plan must be'diet'or 'workout'"}), 400
+ # Ahora sí se lo pasamos al modelo como enum
+    new_myplan = MyPlan(
+        user_id=body['user_id'],
+        plan=body['plan_id'],
+        tipo_plan=tipo,
+        plan_data=body.get('plan_data')
+    )
+    
+    db.session.add(new_myplan)
+    
+    db.session.commit()
+    
+    return jsonify({"sucess": True, "data": new_myplan.serialize()}), 200
+
+# UPDATE MYPLAN
+
+
+@api.route('/update/myplan/<int:plan_id>', methods=['PUT'])
+def update_subscription_plan(plan_id):
+    
+    myplan = db.session.get(MyPlan, plan_id)
+
+    if not myplan:
+        return jsonify({"success": False, "msg": "not found"}), 404
+
+    body = request.get_json()
+
+    if body.get('tipo_plan'):
+        try:
+            # convertimos el string "diet" o "workout" al enum
+            myplan.tipo_plan = DietExerciseType(body['tipo_plan'])
+        except ValueError:
+            # si manda algo que no existe en el enum, devolvemos error
+
+            return jsonify({"success": False, "msg": "tipo_plan must be'diet'or 'workout'"}), 400
+
+
+# - si el frontend manda plan_data → usa el nuevo valor
+# - si no lo manda → mantén el valor que ya tenía
+
+    myplan.plan_data = body.get('plan_data', myplan.plan_data)
+    
+    db.session.commit()
+    
+    return jsonify({"success": True, "data": myplan.serialize()}), 200
+
+
+# DELETE MY PLAN 
+
+@api.route('/delete/myplan/<int:plan_id>', methods=['DELETE'])
+def delete_subscription_plan(plan_id):
+    
+    myplan = db.session.get(MyPlan, plan_id)
+
+    if not myplan:
+        return jsonify({"success": False, "msg": "not found"}), 404
+
+    
+    db.session.delete(myplan)
+    
+    db.session.commit()
+    
+    return jsonify({"success": True, "data": "user deleted " + str(plan_id)}), 200
+
+#  —— PAGOS ————————————————————————————————————————————————————————————————————————————————
+# GET ALL MY Pays
+
+
+@api.route('/payments', methods=['GET'])
+def get_payments():
+    payments = db.session.execute(select(Payment)).scalars().all()
+   
+    transform = [payment.serialize() for payment in payments]
+   
+    return jsonify({"success": True, "data": transform}), 200
+
+# GET PAYMENT BY USER
+
+
+@api.route('/payments/<int:user_id>', methods=['GET'])
+def get_user_payments(user_id):
+    # execute() porque buscamos por user_id que NO es la primary key
+    payments = db.session.execute(select(Payment).where(
+        Payment.user_id == user_id)).scalars().all()
+   
+    transform = [payment.serialize() for payment in payments]
+    
+    return jsonify({"success": True, "data": transform}), 200
+
+
+# CREATE PAYMENT
+api.route ('/payments', methods=['GET'])
+
+def create_payment():
+    body = request.get_json()
+
+    if not body ['user_id'] or not body ['amount'] or not body ['payment_method']:
+        return jsonify ({"success": False, "msg": "missing data"}), 403
+    if not body.get('order_id') and not body.get('subscription_id'):
+        return jsonify({"success":False, "msg": "must provide order_id or subscription_id"}),400
+    
+    new_payment = Payment(
+        user_id = body['user_id'],
+        order_id = body.get ('order_id'),
+        subscription_id=body.get('subscription_id'),
+        amount = body["amount"],
+        payment_method =body['payment_method'],
+        status = PaymentStatus.paid ) 
+
+    db.session.add(new_payment)
+
+    if body.get('order_id'):
+        order = db.session.get(Order,body['order_id'])
+
+        if order:
+            order.status = "paid"
+
+    db.session.commit()
+    
+    return jsonify({"success":True,"data":new_payment.serialize()}), 200                 
