@@ -11,8 +11,10 @@ from datetime import datetime
 
 #  GET CART BY USER
 
-@api.route('/cart/<int:user_id>', methods={'GET'})
-def get_cart(user_id):
+@api.route('/cart', methods={'GET'})
+@jwt_required()
+def get_cart():
+    user_id=get_jwt_identity()
     cart = db.session.execute(select(Cart).where(
         Cart.user_id == user_id)).scalar_one_or_none()
 
@@ -28,17 +30,19 @@ def get_cart(user_id):
 # ADD PRODUCT CART
 
 @api.route('/cart', methods={'POST'})
+@jwt_required()
 def add_to_cart():
+    user_id=get_jwt_identity()
     body = request.get_json()
 
-    if not body['user_id'] or not body['product_id'] or not body['quantity']:
+    if not  body['product_id'] or not body['quantity']:
         return jsonify({'success': False, 'msg': 'missing data'}), 403
 #  buscar o crear carrito
 
     cart = db.session.execute(select(Cart).where(
-        Cart.user_id == body['user_id'])).scalar_one_or_none()
+        Cart.user_id == user_id)).scalar_one_or_none()
     if not cart:
-        cart = Cart(user_id=body['user_id'])
+        cart = Cart(user_id= user_id)
         db.session.add(cart)
         db.session.flush()
 
@@ -65,7 +69,9 @@ def add_to_cart():
 
 
 @api.route('/delete/cart/<int:item_id>', methods=['DELETE'])
+@jwt_required
 def remove_from_cart(item_id):
+    user_id=get_jwt_identity()
     item = db.session.get(User, item_id)
 
     if not item:
