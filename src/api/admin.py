@@ -1,7 +1,7 @@
 
-from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla import ModelView # type: ignore
 import os
-from flask_admin import Admin
+from flask_admin import Admin # type: ignore
 from .models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
 
 

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import rigoImageUrl from "../assets/img/rigo-baby.jpg";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import Calendar from "../components/Calendar.jsx";
+import { Cart } from "../components/Cart.jsx";
 
 export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
@@ -47,6 +48,7 @@ export const Home = () => {
           </span>
         )}
       </div>
+      <Cart></Cart>
     </div>
   );
 };

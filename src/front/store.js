@@ -4,6 +4,8 @@ export const initialStore = () => {
     auth: !!localStorage.getItem("token"),
     user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
+    products: [],
+    cart: JSON.parse(localStorage.getItem("cart")) || [],
     todos: [
       {
         id: 1,
@@ -21,6 +23,36 @@ export const initialStore = () => {
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
+
+    /* DELETE CART ITEM */
+    case 'deleteItem': {
+      const updatedCart = store.cart.filter(
+        item => item.id !== action.payload
+      );
+
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+      return {
+        ...store,
+        cart: updatedCart
+      };
+    }
+
+    /* ADD CART ITEM */
+    case 'addItem': {
+      if (store.cart.some(item => item.id === action.payload.id)) {
+        return store;
+      }
+
+      const updatedCart = [...store.cart, action.payload];
+
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+      return {
+        ...store,
+        cart: updatedCart
+      };
+    }
 
     /* GET PRODUCTS */
 

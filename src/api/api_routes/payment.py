@@ -11,21 +11,38 @@ def create_checkout_session():
     try:
         data = request.get_json()
 
+        products = data.get("products", [])
+
+        line_items = []
+
+        for product in products:
+            line_items.append({
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {
+                        "name": product["name"],
+                    },
+                    "unit_amount": int(product["price"] * 100),
+                },
+                "quantity": 1,
+            })
+
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             mode="payment",
-            line_items=[
-                {
-                    "price_data": {
-                        "currency": "eur",
-                        "product_data": {
-                            "name": data.get("product_name", "Producto"),
-                        },
-                        "unit_amount": data.get("amount", 2000),
-                    },
-                    "quantity": 1,
-                }
-            ],
+            line_items=line_items,
+            # [
+            #     {
+            #         "price_data": {
+            #             "currency": "eur",
+            #             "product_data": {
+            #                 "name": data.get("product_name", "Product"),
+            #             },
+            #             "unit_amount": data.get("amount", 2000),
+            #         },
+            #         "quantity": 1,
+            #     }
+            # ],
             success_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/",
             cancel_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/",
         )
@@ -34,6 +51,7 @@ def create_checkout_session():
         #     "user_id": store.user.id,
         #     "product_name": data.get("product_name"),
         # }
+        
 
         return jsonify({"url": session.url})
 

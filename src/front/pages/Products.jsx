@@ -24,33 +24,6 @@ const Products = () => {
 
     const prod = store.products || [];
 
-    const handleBuy = async (product) => {
-        try {
-            const res = await fetch(url + "/api/create-checkout-session", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    product_name: product.name,
-                    amount: Math.round(product.price * 100), // Stripe usa céntimos
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!data.url) {
-                console.error("Error creando sesión Stripe", data);
-                return;
-            }
-
-            window.location.href = data.url;
-
-        } catch (error) {
-            console.error("Error en pago:", error);
-        }
-    };
-
     return (
         <div className="container py-4">
             <h2 className="mb-4 text-center">Products</h2>
@@ -71,15 +44,28 @@ const Products = () => {
                             <p className="fw-bold">{product?.price} €</p>
                             <button
                                 className="btn btn-success mt-auto"
-                                onClick={() => handleBuy(product)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    store.cart.some(item => item.id === product.id)
+                                        ? dispatch({
+                                            type: "deleteItem",
+                                            payload: product.id,
+                                        })
+                                        : dispatch({
+                                            type: "addItem",
+                                            payload: product,
+                                        });
+                                }
+                                }
                             >
-                                BUY
+                                Add
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
-        </div>
+        </div >
     );
 }
 

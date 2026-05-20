@@ -1,5 +1,5 @@
 
-import click
+import click # type: ignore
 from api.models import db, User
 
 """
