@@ -25,7 +25,7 @@ export const Home = () => {
         throw new Error(
           `Could not fetch the message from the backend.
 				Please check if the backend is running and the backend port is public.`,
-        );
+        ); 
     }
   };
 

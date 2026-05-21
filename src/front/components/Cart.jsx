@@ -31,6 +31,7 @@ export const Cart = () => {
                 },
                 body: JSON.stringify({
                     user_id: store.user.id,
+                    email: store.user.email,
                     products: store.cart,
                 }),
             });
