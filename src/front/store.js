@@ -1,3 +1,10 @@
+const cartFromStorage = JSON.parse(localStorage.getItem("cart")) || [];
+
+const normalizedCart = cartFromStorage.map(item => ({
+  ...item,
+  quantity: item.quantity || 1
+}));
+
 export const initialStore = () => {
   return {
     /* WE USE LOCALSTORAGE TO SAVE THE TOKEN */
@@ -5,7 +12,7 @@ export const initialStore = () => {
     user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
     products: [],
-    cart: JSON.parse(localStorage.getItem("cart")) || [],
+    cart: normalizedCart,
     todos: [
       {
         id: 1,
@@ -24,6 +31,28 @@ export const initialStore = () => {
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
 
+    case "increaseQuantity":
+      return {
+        ...store,
+        cart: store.cart.map(item =>
+          item.id === action.payload
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      };
+
+    case "decreaseQuantity":
+      return {
+        ...store,
+        cart: store.cart
+          .map(item =>
+            item.id === action.payload
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+          .filter(item => item.quantity > 0)
+      };
+
     /* DELETE CART ITEM */
     case 'deleteItem': {
       const updatedCart = store.cart.filter(
@@ -40,11 +69,22 @@ export default function storeReducer(store, action = {}) {
 
     /* ADD CART ITEM */
     case 'addItem': {
-      if (store.cart.some(item => item.id === action.payload.id)) {
-        return store;
-      }
+      const exists = store.cart.find(item => item.id === action.payload.id);
 
-      const updatedCart = [...store.cart, action.payload];
+      let updatedCart;
+
+      if (exists) {
+        updatedCart = store.cart.map(item =>
+          item.id === action.payload.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        updatedCart = [
+          ...store.cart,
+          { ...action.payload, quantity: 1 }
+        ];
+      }
 
       localStorage.setItem("cart", JSON.stringify(updatedCart));
 

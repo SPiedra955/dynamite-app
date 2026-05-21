@@ -12,6 +12,8 @@ import { Demo } from "./pages/Demo";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import Products from "./pages/Products"
+import Success from "./pages/Success";
+import PaymentError from "./pages/PaymentError";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +33,8 @@ export const router = createBrowserRouter(
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/authentication" element={<Auth />} />
       <Route path="/products" element={<Products />} />
+      <Route path="/successful-payment" element={<Success />} />
+      <Route path="/payment-error" element={<PaymentError />} />
     </Route>
   )
 );

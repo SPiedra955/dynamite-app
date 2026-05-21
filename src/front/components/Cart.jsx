@@ -10,12 +10,19 @@ export const Cart = () => {
     const url = import.meta.env.VITE_BACKEND_URL;
 
     const total = store.cart.reduce(
-        (acc, item) => acc + item.price,
+        (acc, item) => acc + item.price * item.quantity,
         0
     );
 
     const handleBuy = async (product) => {
         try {
+
+            const user_id = store.user?.id;
+
+            if (!user_id) {
+                console.error("Usuario no logueado");
+                return;
+            }
 
             const res = await fetch(url + "/api/create-checkout-session", {
                 method: "POST",
@@ -23,8 +30,8 @@ export const Cart = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    user_id: store.user.id,
                     products: store.cart,
-                    amount: Math.round(total * 100),
                 }),
             });
 
@@ -89,22 +96,48 @@ export const Cart = () => {
                                             </div>
 
                                             <div>
-                                                {cartItem.price} €
+                                                <div>
+                                                    {cartItem.price} € x {cartItem.quantity}
+                                                </div>
                                             </div>
                                         </span>
 
-                                        <span onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
+                                        <span >
+                                            <div className="d-flex align-items-center gap-2">
 
-                                            dispatch({
-                                                type: "deleteItem",
-                                                payload: cartItem.id,
-                                            })
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
 
-                                        }
-                                        } style={{ cursor: "pointer" }}>
-                                            🗑️
+                                                        dispatch({
+                                                            type: "decreaseQuantity",
+                                                            payload: cartItem.id,
+                                                        });
+                                                    }}
+                                                >
+                                                    -
+                                                </button>
+
+                                                <span>{cartItem.quantity}</span>
+
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+
+                                                        dispatch({
+                                                            type: "increaseQuantity",
+                                                            payload: cartItem.id,
+                                                        });
+                                                    }}
+                                                >
+                                                    +
+                                                </button>
+
+                                            </div>
                                         </span>
                                     </li>
                                 ))}
