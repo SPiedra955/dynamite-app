@@ -9,7 +9,7 @@ from datetime import datetime
 # ── USUARIO ───────────────────────────────────────────────────────────────────
 
 # GET ALL USERS
-
+# admin
 @api.route("/users", methods=['GET'])
 def get_all_users():
     users = db.session.execute(select(User)).scalars().all()

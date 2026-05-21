@@ -29,7 +29,7 @@ def get_subscription_plan(plan_id):
 
 # CREATE SUBSCRIPTION PLAN
 
-
+jwt_required
 @api.route('/subscription-plans', methods=['POST'])
 def create_subscription_plan():
     body = request.get_json()
@@ -67,7 +67,7 @@ def update_subscription_plan(plan_id):
 # DELETE SUBS PLAN
 
 
-@api.route('/delete/subscripton-plan/<int:item_id>', methods=['DELETE'])
+@api.route('/delete/subscripton-plan/<int:plan_id>', methods=['DELETE'])
 def delete_subscription_plan(plan_id):
     plan = db.session.get(SubscriptionPlan, plan_id)
 
