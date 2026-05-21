@@ -10,7 +10,8 @@ from werkzeug.security import generate_password_hash, check_password_hash # type
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required # type: ignore
 from api.blueprint import api
 from api.api_routes.products import *
-from api.api_routes.payment import *
+from api.api_routes.payment import *from api.api_routes.carts import *
+
 
 # Allow CORS requests to this API
 CORS(api)
