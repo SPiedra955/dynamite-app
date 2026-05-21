@@ -40,7 +40,7 @@ class User(db.Model):
         String(255),
         nullable=False
     )
-
+# podriamos pasarlo a enum
     role: Mapped[str] = mapped_column(
         String(20), default='user',
         nullable=False
