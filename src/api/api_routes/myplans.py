@@ -35,10 +35,12 @@ def get_user_myplans(user_id):
 
 
 @api.route('/myplans', methods=['POST'])
+@jwt_required()
 def create_myplan():
+    user_id=get_jwt_identity()
     body = request.get_json()
 
-    if not body['user_id'] or not body['plan_id']:
+    if not body.get('plan_id'):
         return jsonify({"sucess": True, "msg": "missing data"}), 403
     # Lo convertimos al enum
     # llega "diet" desde el frontend
@@ -48,8 +50,8 @@ def create_myplan():
         return jsonify({"success": False, "msg": "tipo_plan must be'diet'or 'workout'"}), 400
  # Ahora sí se lo pasamos al modelo como enum
     new_myplan = MyPlan(
-        user_id=body['user_id'],
-        plan=body['plan_id'],
+        user_id=user_id,
+        plan_id=body['plan_id'],
         tipo_plan=tipo,
         plan_data=body.get('plan_data')
     )
@@ -58,7 +60,7 @@ def create_myplan():
     
     db.session.commit()
     
-    return jsonify({"sucess": True, "data": new_myplan.serialize()}), 200
+    return jsonify({"success": True, "data": new_myplan.serialize()}), 200
 
 # UPDATE MYPLAN
 
