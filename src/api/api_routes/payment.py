@@ -2,6 +2,7 @@ import os
 import stripe  # type: ignore
 from flask import request, jsonify  # type: ignore
 from api.blueprint import api
+import hashlib
 from api.models import (
     db,
     User,
@@ -13,171 +14,174 @@ from api.models import (
     Payment,
     Cart,
     CartItem,
+    PaymentStatus,
 )
 from datetime import datetime, UTC
 from decimal import Decimal
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required  # type: ignore
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")  # KEY INSIDE .ENV
 
 
 @api.route("/create-checkout-session", methods=["POST"])
+@jwt_required()
 def create_checkout_session():
+
     try:
+
         data = request.get_json()
 
         products = data.get("products", [])
 
+        user_id = int(get_jwt_identity())
+
         line_items = []
 
-        for product in products:
+        total = Decimal("0.00")
+
+        # CREATE ORDER
+        order = Order(
+            user_id=user_id,
+            total_price=Decimal("0.00"),
+            status="pending",
+            created_at=datetime.now(UTC),
+        )
+
+        db.session.add(order)
+        db.session.flush()
+        # print(products)
+        # print(Product.query.all())
+        for item in products:
+
+            product_id = int(item["id"])
+            product = Product.query.get(product_id)
+            # print('soy el id ', product_id)
+
+
+            if not product:
+                return jsonify({"error": "Product not found"}), 404
+
+            quantity = int(item["quantity"])
+
+            if product.stock < quantity:
+                return jsonify({"error": "Insufficient stock"}), 400
+
+            subtotal = product.price * quantity
+            total += subtotal
+
+            # ORDER ITEM
+            order_item = OrderItem(
+                order_id=order.id,
+                product_id=product.id,
+                quantity=quantity,
+                price=product.price,
+            )
+            
+            # CART ITEMS
+            
+
+            db.session.add(order_item)
+
+            # STRIPE ITEMS
             line_items.append(
                 {
                     "price_data": {
                         "currency": "eur",
                         "product_data": {
-                            "name": product["name"],
+                            "name": product.name,
                         },
-                        "unit_amount": int(product["price"] * 100),
+                        "unit_amount": int(product.price * 100),
                     },
-                    "quantity": int(product["quantity"]),
+                    "quantity": quantity,
                 }
             )
 
+        order.total_price = total
+
+        db.session.flush()
+
+        # STRIPE SESSION
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             mode="payment",
             line_items=line_items,
             customer_email=data.get("email"),
+
             success_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/successful-payment",
+
             cancel_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/payment-error",
-            # SEND DATA
+
             metadata={
-                "user_id": data["user_id"],
-                "created_at": datetime.now(UTC).isoformat(),
+                "order_id": str(order.id),
             },
         )
+        order.stripe_session_id = session.id
+
+        db.session.commit()
 
         return jsonify({"url": session.url})
 
     except Exception as e:
+        db.session.rollback()
+        print("CHECKOUT ERROR:", repr(e))
         return jsonify({"error": str(e)}), 400
 
 
 @api.route("/stripe-webhook", methods=["POST"])
 def stripe_webhook():
-    payload = request.data
-    sig_header = request.headers.get("Stripe-Signature")
+    
+    
     endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
-    print("WEBHOOK SECRET:", endpoint_secret)
-    # 1. VALIDAR FIRMA STRIPE
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
-        )
-    except Exception as e:
-        print("❌ Webhook signature error:", str(e))
-        return str(e), 400
+    sig_header = request.headers.get("Stripe-Signature")
+    payload = request.get_data(cache=False)
 
-    # 2. SOLO PROCESAR EVENTO IMPORTANTE
+    print("SECRET FROM ENV:", endpoint_secret)
+    print("RAW BODY:", payload[:200])
+
+    event = stripe.Webhook.construct_event(
+        payload,
+        sig_header,
+        endpoint_secret
+    )
+
     if event["type"] != "checkout.session.completed":
-        return jsonify({"status": "ignored event"}), 200
+        return jsonify({"status": "ignored"}), 200
 
     session = event["data"]["object"]
 
-    try:
-        stripe_session_id = session["id"]
-        print("📩 Pago completado:", stripe_session_id)
+    if session["payment_status"] != "paid":
+        return jsonify({"status": "unpaid"}), 200
 
-        # 3. EVITAR DUPLICADOS
-        existing_payment = Payment.query.filter_by(
-            stripe_session_id=stripe_session_id
-        ).first()
+    stripe_session_id = session["id"]
 
-        if existing_payment:
-            print("⚠️ Pago ya procesado")
-            return jsonify({"status": "already processed"}), 200
+    order = Order.query.filter_by(
+        stripe_session_id=stripe_session_id
+    ).first()
 
-        # 4. METADATA
-        metadata = session.get("metadata") or {}
-        user_id = metadata.get("user_id")
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
 
-        if not user_id:
-            print("❌ Missing user_id in metadata")
-            return jsonify({"error": "Missing user_id"}), 400
+    #  1. marcar pagado
+    order.status = "paid"
 
-        user_id = int(user_id)
+    #  2. descontar stock
+    for item in order.order_items:
+        product = item.product
+        product.stock -= item.quantity
 
-        amount = Decimal(session["amount_total"]) / 100
+    #  3. crear payment
+    payment = Payment(
+        user_id=order.user_id,
+        order_id=order.id,
+        amount=order.total_price,
+        payment_method="stripe",
+        status=PaymentStatus.paid,
+        stripe_session_id=stripe_session_id,
+        created_at=datetime.now(UTC),
+    )
 
-        # 5. CART
-        cart = Cart.query.filter_by(user_id=user_id).first()
-        if not cart:
-            print("❌ Cart not found")
-            return jsonify({"error": "Cart not found"}), 404
+    db.session.add(payment)
 
-        # 6. CREAR ORDER
-        order = Order(
-            user_id=user_id,
-            total_price=amount,
-            status="paid",
-            created_at=datetime.now(UTC),
-        )
+    db.session.commit()
 
-        db.session.add(order)
-        db.session.flush()  # para obtener order.id
-
-        # 7. CREAR ITEMS
-        has_error = False
-
-        for cart_item in cart.cart_items:
-            product = cart_item.product
-
-            if product.stock < cart_item.quantity:
-                has_error = True
-                break
-
-            order_item = OrderItem(
-                order_id=order.id,
-                product_id=cart_item.product_id,
-                quantity=cart_item.quantity,
-                price=product.price,
-            )
-
-            db.session.add(order_item)
-
-            # actualizar stock
-            product.stock -= cart_item.quantity
-
-        # si hay error → rollback total
-        if has_error:
-            db.session.rollback()
-            print("❌ Stock insuficiente")
-            return jsonify({"error": "Insufficient stock"}), 400
-
-        # 8. PAYMENT
-        payment = Payment(
-            user_id=user_id,
-            order_id=order.id,
-            amount=amount,
-            payment_method="stripe",
-            status="completed",
-            stripe_session_id=stripe_session_id,
-            created_at=datetime.now(UTC),
-        )
-
-        db.session.add(payment)
-
-        # 9. VACÍO DE CARRITO
-        CartItem.query.filter_by(cart_id=cart.id).delete()
-
-        # 10. COMMIT FINAL
-        db.session.commit()
-
-        print("✅ Todo guardado correctamente en DB")
-
-        return jsonify({"status": "ok"}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        print("🔥 ERROR WEBHOOK:", str(e))
-        return jsonify({"error": str(e)}), 500
+    return jsonify({"status": "success"}), 200

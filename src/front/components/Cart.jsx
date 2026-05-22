@@ -8,6 +8,7 @@ export const Cart = () => {
     const navigate = useNavigate()
     const { store, dispatch } = useGlobalReducer()
     const url = import.meta.env.VITE_BACKEND_URL;
+    const token = localStorage.getItem("token")
 
     const total = store.cart.reduce(
         (acc, item) => acc + item.price * item.quantity,
@@ -17,23 +18,19 @@ export const Cart = () => {
     const handleBuy = async (product) => {
         try {
 
-            const user_id = store.user?.id;
-
-            if (!user_id) {
-                console.error("Usuario no logueado");
-                return;
-            }
-
-            const res = await fetch(url + "/api/create-checkout-session", {
+            const res = await fetch(`${url}/api/create-checkout-session`, {
                 method: "POST",
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    user_id: store.user.id,
                     email: store.user.email,
-                    products: store.cart,
-                }),
+                    products: store.cart.map(item => ({
+                        id: item.id,
+                        quantity: item.quantity
+                    }))
+                })
             });
 
             const data = await res.json();

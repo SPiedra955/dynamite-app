@@ -138,6 +138,8 @@ class Order(db.Model):
 
     status: Mapped[str] = mapped_column(String(20), nullable=False)
 
+    stripe_session_id: Mapped[str] = mapped_column(String(255), nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
@@ -350,7 +352,7 @@ class Cart(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False, unique=True
+        ForeignKey("users.id"), nullable=False, unique=False
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -360,7 +362,9 @@ class Cart(db.Model):
     # Relationships
     user = relationship("User", back_populates="carts")
 
-    cart_items = relationship("CartItem", back_populates="cart")
+    cart_items = relationship(
+        "CartItem", back_populates="cart", cascade="all, delete-orphan"
+    )
 
     def serialize(self):
         return {"id": self.id, "user_id": self.user_id, "created_at": self.created_at}
