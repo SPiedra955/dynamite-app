@@ -38,7 +38,7 @@ export const router = createBrowserRouter(
       <Route path="/products" element={<Products />} />
       <Route path="/successful-payment" element={<Success />} />
       <Route path="/payment-error" element={<PaymentError />} />
-      <Route path="/planes_de_suscripcion" element={<Planes_de_suscripcion />} />
+      <Route path="/planes-de-suscripcion" element={<Planes_de_suscripcion />} />
       <Route path="/tienda" element={<Tienda />} />
       <Route path="/encuesta" element={<Encuesta />} />
 

@@ -22,6 +22,9 @@ flask-jwt-extended = "*"
 stripe = "*"
 flask = "*"
 python-dotenv = "*"
+kagglehub = "*"
+pandas = "*"
+kaggle = "*"
 
 [requires]
 python_version = "3.13"
