@@ -12,19 +12,7 @@ export const initialStore = () => {
     user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
     products: [],
-    cart: normalizedCart,
-    todos: [
-      {
-        id: 1,
-        title: "Make the bed",
-        background: null,
-      },
-      {
-        id: 2,
-        title: "Do my homework",
-        background: null,
-      }
-    ]
+    cart: normalizedCart
   }
 }
 

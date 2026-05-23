@@ -180,7 +180,24 @@ def stripe_webhook():
 
     db.session.add(payment)
 
+    cart = Cart(
+        user_id=order.user_id,
+        created_at=datetime.now(UTC)
+    )
+    
+    db.session.add(cart)
+    db.session.flush()
+    
+    for item in order.order_items:
+        cart_item = CartItem(
+            cart_id=cart.id,
+            product_id=item.product_id,
+            quantity=item.quantity
+        )
+        db.session.add(cart_item)
+    
     db.session.commit()
+
 
     return jsonify({"status": "success"}), 200
 
