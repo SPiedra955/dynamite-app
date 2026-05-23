@@ -18,7 +18,7 @@ def seed_products_from_csv(path: str):
             price=row["price"],
             stock=100,
             category=row["product_category"],
-            image="change.jpg"
+            image="src/front/assets/img/article.jpg"
         )
 
         products.append(product)
