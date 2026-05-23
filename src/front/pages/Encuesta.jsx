@@ -3,6 +3,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
+
 // preguntas para desarollar el prompt de ejercicios
 const workout_fields = [
   {
@@ -151,8 +152,12 @@ const Encuesta = () => {
   const tipos = location.state?.tipos ?? [];
 
   //  campos del formulario segun el tipo de plan
+  // Y buildFields devuelve: Si es workout → los 7 campos de workout_fields
+  // Si es dieta → los 7 campos de diet_fields
+  // Si es completo → los 14 campos de ambos juntos
 
   const fields = buildFields(tipos);
+
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -197,7 +202,7 @@ const Encuesta = () => {
       // pillamos el token de store
       const token = localStorage.getItem("token");
 
-      // pillamos datos del stpr
+      // pillamos datos del store
       const user = store.user;
       // lanza una petición por cada tipo de plan si es el completo envia las 2 a la vez
       const requests = tipos.map(async (tipo) => {
@@ -230,7 +235,7 @@ const Encuesta = () => {
         return data;
       });
       //  Sirve para esperar a que todas las peticiones del array requests terminen a la vez.
-      const results = await Promise.all(request);
+      const results = await Promise.all(requests);
       // Sirve para comprobar si alguna de las peticiones a Gemini falló.
       const failed = results.find((result) => !result.success);
 
@@ -250,16 +255,101 @@ const Encuesta = () => {
   };
   return (
     <div className="bg-dark min-vh-100 py-5">
-      <div className="container col-md-8 col-lg-6 mx auto">
+      <div className="container col-md-8 col-lg-6 mx-auto">
         <h5 className="text-white mb-1"> Tu plan personalizado</h5>
         <div className="border border-danger border-top my-3"></div>
         <p className="text-white-50 small mb-4">
           {/* para que salga si es ejercicio o dieta o lo dos juntos con un + */}
-          {tipos.map(tipo => tipo === "workout" ? "Ejercicio" : "Dieta").join(" + ")}
+          {tipos
+            .map((tipo) => (tipo === "workout" ? "Ejercicio" : "Dieta"))
+            .join(" + ")}
         </p>
-{/* renderizza las preguntas segun el tipo de plan */}
+        {/* renderizza las preguntas segun el tipo de plan */}
+        {fields.map((field) => (
+          <div className="mb-4" key={field.key}>
+            <label className="form-label text-white-50 small fw-semibold">
+              {field.label}
+            </label>
 
+            {field.type === "select" && (
+              <select
+                className="form-select bg-dark text-white border-secondary"
+                value={formData[field.key] || ""}
+                onChange={(e) => handleField(field.key, e.target.value)}
+              >
+                {/* opcion por defecto cuando el usuario no ha elegido nada */}
+                <option value=""> Selecciona una opcion...</option>
 
+                {/* recorre el array de opciones del campo y crea una option por cada una */}
+
+                {field.options.map((opt) => (
+                  // key para que React identifique cada opcion
+                  // value es lo que se guarda en formData al elegir
+                  // opt es el texto que ve el usuario
+
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            )}
+             {/* solo renderiza si es tipo checkbox */}
+            {field.type === "checkbox" && (
+              <div className="d-flex flex-column gap-2 mt-1">
+
+                {/* recorre las opciones del campo  y crea un checkbox*/}
+                {field.options.map((opt) => (
+                  <div className="form-check" key={opt}>
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={`${field.key}-${opt}`}
+                      // checked comprueba si esta opcion esta en el array de FormDATA
+                     checked={(formData[field.key] || []).includes(opt)}
+                    //  al marcar o desmarcar llama  a la funcion handlecheckbox para actualizarlo
+                     onChange={()=>handleCheckbox(field.key,opt)}
+                    />
+
+                    <label
+                      className="form-check-label text-white-50"
+                      htmlFor={`${field.key}-${opt}`}
+                    >
+                      {opt}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+            {field.type === "text" && (
+              <input
+                className="form-control bg-dark text-white border-secondary"
+                type="text"
+                placeholder={field.placeholder}
+                value={formData[field.key] || ""}
+                onChange={(e) => handleField(field.key, e.target.value)}
+              />
+            )}
+          </div>
+        ))}
+        {error && (
+          <div className="alert alert-danger py-2 small mb-3">{error}</div>
+        )}
+
+        <button
+          className="btn btn-danger rounded-pill px-5 w-100"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              {" "}
+              <span className="spinner-border spinner-border-sm me-2" />
+              Generando planes con  IA...
+            </>
+          ) : (
+            `Generar ${tipos.length > 1 ? "planes" : "plan"}`
+          )}
+        </button>
       </div>
     </div>
   );
