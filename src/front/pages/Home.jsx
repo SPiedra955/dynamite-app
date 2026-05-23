@@ -34,23 +34,6 @@ export const Home = () => {
   }, []);
 
   return (
-<<<<<<< HEAD
-    <div className="text-center mt-5">
-      <h1 className="display-4">Hello Rigo!!</h1>
-      <p className="lead">
-        <img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
-      </p>
-      <div className="alert alert-info">
-        {store.message ? (
-          <span>{store.message}</span>
-        ) : (
-          <span className="text-danger">
-            Loading message from the backend (make sure your python 🐍 backend is running)...
-          </span>
-        )}
-      </div>
-      <Cart></Cart>
-=======
     <div className="bg-dark p-0 pt-1">
         <div className="bg-danger w-100 d-flex flex-column align-items-center justify-content-center py-5">
           <p className="text-center h1 text-white px-3 my-3">
@@ -132,7 +115,6 @@ export const Home = () => {
       </div>
 
 
->>>>>>> 65748fb5c428503638b90a8a9aef15c2f410855c
     </div>
   );
 };

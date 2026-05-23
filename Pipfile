@@ -19,9 +19,9 @@ sqlalchemy = "*"
 werkzeug = "*"
 flask-cors = "*"
 flask-jwt-extended = "*"
-stripe = "*"
 flask = "*"
 python-dotenv = "*"
+stripe = "*"
 
 [requires]
 python_version = "3.13"
