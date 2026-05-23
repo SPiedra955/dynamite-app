@@ -18,6 +18,7 @@ from api.models import (
 )
 from datetime import datetime, UTC
 from decimal import Decimal
+from sqlalchemy import select  # type: ignore
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required  # type: ignore
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")  # KEY INSIDE .ENV
@@ -57,7 +58,6 @@ def create_checkout_session():
             product = Product.query.get(product_id)
             # print('soy el id ', product_id)
 
-
             if not product:
                 return jsonify({"error": "Product not found"}), 404
 
@@ -76,9 +76,8 @@ def create_checkout_session():
                 quantity=quantity,
                 price=product.price,
             )
-            
+
             # CART ITEMS
-            
 
             db.session.add(order_item)
 
@@ -129,8 +128,7 @@ def create_checkout_session():
 
 @api.route("/stripe-webhook", methods=["POST"])
 def stripe_webhook():
-    
-    
+
     endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
     sig_header = request.headers.get("Stripe-Signature")
     payload = request.get_data(cache=False)
@@ -185,3 +183,13 @@ def stripe_webhook():
     db.session.commit()
 
     return jsonify({"status": "success"}), 200
+
+
+# GET ORDERS
+
+
+@api.route("/orders", methods=["GET"])
+def get_all_orders():
+    orders = db.session.execute(select(Order)).scalars().all()
+    transform = [order.serialize() for order in orders]
+    return jsonify({"success": True, "data": transform}), 200
