@@ -34,19 +34,7 @@ export const Home = () => {
 
   return (
     <div className="bg-dark p-0 pt-1">
-        <div className="bg-danger w-100 d-flex flex-column align-items-center justify-content-center py-5">
-          <p className="text-center h1 text-white px-3 my-3">
-            Ponerte en forma nunca fue tan sencillo
-          </p>
-          <p className="text-center h3 text-white px-3 my-3 mx">
-            Nuestro sistema 100% personalizado te ayudará a mejorar tu estado de forma en muy pocas semanas
-          </p>
-          <button className="btn btn-dark rounded-pill px-5 m-3">
-            Saber más
-          </button>
-        </div>
-
-            
+                    
         {/* Primera card */}
 
       <div className="container py-5">
