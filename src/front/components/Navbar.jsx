@@ -4,7 +4,7 @@ export const Navbar = () => {
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark position-absolute w-100" 
-  		style={{ backgroundColor: "rgba(0,0,0,0.3)", zIndex: 10 }}>
+  	style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", zIndex: 10 }}>	
   			<div className="container">
     
 			<Link to="/" className="navbar-brand fw-bold">
@@ -25,8 +25,8 @@ export const Navbar = () => {
 
 			<div className="collapse navbar-collapse" id="navbarMenu">
 			<div className="navbar-nav ms-auto d-flex gap-5 align-items-center">
-				<Link to="/" className="nav-link text-light">Planes</Link>
-				<Link to="/" className="nav-link text-light">Tienda</Link>
+				<Link to="/Planes_de_suscripcion" className="nav-link text-light">Planes</Link>
+				<Link to="/Tienda" className="nav-link text-light">Tienda</Link>
 				<Link to="/authentication">
 					<button className="btn btn-danger rounded-pill px-5">Login</button>
 				</Link>

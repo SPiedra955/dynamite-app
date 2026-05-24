@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { Plans } from "../components/Plans"
+import { Navbar } from "../components/Navbar";
 
-const Planes_de_suscripcion = () => {
-  const { store, dispatch } = useGlobalReducer();
-  return 
-  <div className="bg-dark text-light">planes de suscripcion</div>;
+export const Planes_de_suscripcion = () => {
+    return (
+        <ScrollToTop>    
+          <Navbar />                 
+          <Plans /> 
+          <Footer />        
+        </ScrollToTop>
+    )
 };
-
-export default Planes_de_suscripcion;

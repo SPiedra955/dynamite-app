@@ -12,7 +12,7 @@ import { Demo } from "./pages/Demo";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import Tienda from "./pages/Tienda";
-import Planes_de_suscripcion from "./pages/Planes_de_suscripcion";
+import { Planes_de_suscripcion } from "./pages/Planes_de_suscripcion";
 import Encuesta from "./pages/Encuesta";
 
 export const router = createBrowserRouter(

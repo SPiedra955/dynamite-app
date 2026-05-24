@@ -1,3 +1,7 @@
+import { Link } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { useNavigate } from "react-router-dom";
+
 export const Slide = () => (
 
 <div
@@ -19,9 +23,11 @@ export const Slide = () => (
       <p className="text-center h3 text-white px-3 my-3">
         Nuestros planes completamente personalizados harán a explotar todo tu potencial
       </p>
+      <Link to="/Planes_de_suscripcion">
       <button className="btn btn-danger rounded-pill px-5 m-3">
         Saber más
       </button>
+      </Link>
     </div>
   </div>
 </div>

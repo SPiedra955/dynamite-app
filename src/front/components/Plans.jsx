@@ -1,3 +1,7 @@
+import { Link } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { useNavigate } from "react-router-dom";
+
 export const Plans = () => (
 
 <div className="bg-danger w-100 py-5">
@@ -25,7 +29,9 @@ export const Plans = () => (
           </ul>
           <div className="text-center">
             <p className="text-white fw-bold fs-5">Precio: 6,90€</p>
+            <Link to="/Planes_de_suscripcion">
             <button className="btn btn-danger rounded-pill px-5">Comprar</button>
+            </Link>
           </div>
         </div>
       </div>
