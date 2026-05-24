@@ -3,6 +3,8 @@ import ScrollToTop from "../components/ScrollToTop"
 import { Navbar } from "../components/Navbar"
 import { Footer } from "../components/Footer"
 import { Card } from "../components/Card"
+import { Plans } from "../components/Plans"
+import { Separator } from "../components/Separator"
 
 // Base component that maintains the navbar and footer throughout the page and the scroll to top functionality.
 export const Layout = () => {
@@ -10,6 +12,8 @@ export const Layout = () => {
         <ScrollToTop>
             <Navbar />
             <Outlet />
+            <Plans />
+            <Separator />
             <Footer />
         </ScrollToTop>
     )
