@@ -133,8 +133,8 @@ Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura exacta, sin text
 # GEMINI API
 
 def call_ia(prompt):
-    genai.configure(api_key=os.environ.get ("Gemini_API_KEY"))
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    genai.configure(api_key=os.environ.get ("GEMINI_API_KEY"))
+    model = genai.GenerativeModel("gemini-2.5-flash")
     response = model.generate_content(prompt)
     raw = response.text.strip() 
     
@@ -203,11 +203,68 @@ def create_myplan():
 
     return jsonify({"success": True, "data": new_myplan.serialize()}), 200
 
+
+
+# GENERATE PLAN CON IA
+
+@api.route('/myplans/generate',methods=['POST'])
+
+@jwt_required()
+def generate_myplan():
+    user_id= int(get_jwt_identity())
+    body = request.get_json()
+
+    # validamos que llegue el tipo de plan
+
+    if not body.get('tipo_plan'):
+        return jsonify({"success": False, "msg": "tipo_plan es obligatorio"}),400
+    
+    # convertimos el string a tipo enum
+    try:
+        tipo=DietExerciseType(body['tipo_plan'])
+    except ValueError:
+        return jsonify({"success": False, "msg": "tipo_plan debe ser 'diet'o 'workout' "}),400
+
+    # si no llega plan_id usamos 1 por defecto
+    plan_id = body.get('plan_id',1)
+
+    # construimos el prompt segun el tipo de plan
+    # en encuesta tenemos que haga dos pedidos una para workout y otro diet
+
+    prompt = build_workout_prompt(body) if tipo == DietExerciseType.workout else build_diet_prompt(body)
+      
+    # llamamos a gemini
+
+    try:
+        plan_data = call_ia(prompt)
+    except  Exception as e:
+        # para saber si hay cualquier error al llamar a gemini
+        return jsonify ({"success": False, "msg": f"Error con Gemini: {str(e)}"}), 500
+    
+    # guardamos el plan en la BD
+
+    new_plan =MyPlan(
+        user_id=user_id,
+        plan_id=plan_id,
+        tipo_plan= tipo,
+        plan_data=plan_data
+    )
+    db.session.add(new_plan)
+    db.session.commit()
+    
+    return jsonify({"success": True, "data":new_plan.serialize()}),201
+
+
+
+
+
+
+
 # UPDATE MYPLAN
 
 
 @api.route('/update/myplan/<int:plan_id>', methods=['PUT'])
-def update_subscription_plan(plan_id):
+def update_myplan(plan_id):
 
     myplan = db.session.get(MyPlan, plan_id)
 
@@ -239,7 +296,7 @@ def update_subscription_plan(plan_id):
 # DELETE MY PLAN
 
 @api.route('/delete/myplan/<int:plan_id>', methods=['DELETE'])
-def delete_subscription_plan(plan_id):
+def delete_myplan(plan_id):
 
     myplan = db.session.get(MyPlan, plan_id)
 

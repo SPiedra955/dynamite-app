@@ -15,8 +15,9 @@ import Products from "./pages/Products"
 import Success from "./pages/Success";
 import PaymentError from "./pages/PaymentError";
 import Planes_de_suscripcion from "./pages/Planes_de_suscripcion"
-import Tienda from "./pages/Tienda"
-import Encuesta from "./pages/Encuesta"
+import Tienda from "./pages/Tienda";
+import Encuesta from "./pages/Encuesta";
+import Perfil from "./pages/Perfil";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -41,7 +42,7 @@ export const router = createBrowserRouter(
       <Route path="/planes_de_suscripcion" element={<Planes_de_suscripcion />} />
       <Route path="/tienda" element={<Tienda />} />
       <Route path="/encuesta" element={<Encuesta />} />
-
+      <Route path="/perfil" element={<Perfil />} />
     </Route>
   )
 );
