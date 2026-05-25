@@ -76,4 +76,30 @@ services.getProducts = async () => {
         return [];
     }
 };
+
+/* IS SUBSCRIPTION ACTIVE */
+
+services.isActive = async () => {
+    try {
+        const resp = await fetch(url + "/api/subscription/me", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+            throw new Error(data.msg || "subscription error");
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
 export default services;

@@ -7,18 +7,32 @@ const normalizedCart = cartFromStorage.map(item => ({
 
 export const initialStore = () => {
   return {
-    /* WE USE LOCALSTORAGE TO SAVE THE TOKEN */
+    /* WE USE LOCALSTORAGE TO SAVE THE TOKEN AND USEFUL STUFF */
     auth: !!localStorage.getItem("token"),
     user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
     products: [],
-    cart: normalizedCart
+    cart: normalizedCart,
+    sub: false
   }
 }
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
 
+    case "setSubscriptionPlan":
+      return {
+        ...store,
+        sub: action.payload
+      }
+
+    case "clearCart":
+      return {
+        ...store,
+        cart: []
+      };
+
+    /* INCREASE ITEM QUANTITY IN CART */
     case "increaseQuantity":
       return {
         ...store,
@@ -29,6 +43,7 @@ export default function storeReducer(store, action = {}) {
         )
       };
 
+    /* DECREASE ITEM QUANTITY IN CART */
     case "decreaseQuantity":
       return {
         ...store,

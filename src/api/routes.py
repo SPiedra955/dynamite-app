@@ -12,7 +12,7 @@ from api.blueprint import api
 from api.api_routes.products import *
 from api.api_routes.payment import *
 from api.api_routes.carts import *
-
+from api.api_routes.subscription import *
 
 # Allow CORS requests to this API
 CORS(api)

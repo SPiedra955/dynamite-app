@@ -29,7 +29,7 @@ export const Plans = () => (
           </ul>
           <div className="text-center">
             <p className="text-white fw-bold fs-5">Precio: 6,90€</p>
-            <Link to="/Planes_de_suscripcion">
+            <Link to="/planes-de-suscripcion">
             <button className="btn btn-danger rounded-pill px-5">Comprar</button>
             </Link>
           </div>
