@@ -23,8 +23,8 @@ stripe = "*"
 flask = "*"
 python-dotenv = "*"
 kagglehub = "*"
-pandas = "*"
 kaggle = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.13"
