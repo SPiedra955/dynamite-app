@@ -51,26 +51,25 @@ export const Navbar = () => {
 
 
 	return (
-		<nav className="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-			<div className="container">
+		<nav className="navbar navbar-expand-lg navbar-dark position-absolute w-100" 
+  	style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", zIndex: 10 }}>	
+  			<div className="container">
+    
+			<Link to="/" className="navbar-brand fw-bold">
+			React Boilerplate
+			</Link>
 
-				{/* Logo */}
-				<Link to="/" className="navbar-brand fw-bold">
-					React Boilerplate
-				</Link>
-
-				{/* Hamburguesa */}
-				<button
-					className="navbar-toggler"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarMenu"
-					aria-controls="navbarMenu"
-					aria-expanded="false"
-					aria-label="Toggle navigation"
-				>
-					<span className="navbar-toggler-icon"></span>
-				</button>
+			<button
+			className="navbar-toggler"
+			type="button"
+			data-bs-toggle="collapse"
+			data-bs-target="#navbarMenu"
+			aria-controls="navbarMenu"
+			aria-expanded="false"
+			aria-label="Toggle navigation"
+			>
+			<span className="navbar-toggler-icon"></span>
+			</button>
 
 				{/* Menu */}
 				<div className="collapse navbar-collapse" id="navbarMenu">
