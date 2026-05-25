@@ -51,7 +51,7 @@ export const Navbar = () => {
 
 
 	return (
-		<nav className="navbar navbar-expand-lg navbar-dark position-absolute w-100" 
+		<nav className="navbar navbar-expand-lg navbar-dark position-fixed top-0 start-0 w-100" 
   	style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", zIndex: 10 }}>	
   			<div className="container">
     
