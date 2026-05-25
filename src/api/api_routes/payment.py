@@ -24,6 +24,47 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")  # KEY INSIDE .ENV
 
 
+@api.route("/create-subscription-checkout", methods=["POST"])
+@jwt_required
+def create_subscription_checkout():
+    try:
+        data = request.get_json()
+        plan_id = data.get("subscription_plan_id")
+        if not plan_id:
+            return jsonify({"error": "Subscription plan required"}), 404
+        plan = SubscriptionPlan.query.get(plan_id)
+        
+        if not plan:
+            return jsonify({"error": "Plan not found"}), 404
+        
+        user_id = int(get_jwt_identity())
+        
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            mode="subscription",
+            line_items=[
+                {
+                    "price": plan.stripe_price_id,
+                    "quantity": 1,
+                    }
+                ],
+            
+            success_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/successful-payment",
+
+            cancel_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/payment-error",
+
+            metadata = {
+                "type": "subscription",
+                "user_id": str(user_id),
+                "plan_id": str(plan.id),
+            })
+        return jsonify({"url": session.url}), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+            
+            
+
 @api.route("/create-checkout-session", methods=["POST"])
 @jwt_required()
 def create_checkout_session():
@@ -111,6 +152,7 @@ def create_checkout_session():
             cancel_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/payment-error",
 
             metadata={
+                "type":"payment",
                 "order_id": str(order.id),
             },
         )
@@ -132,15 +174,17 @@ def stripe_webhook():
     endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
     sig_header = request.headers.get("Stripe-Signature")
     payload = request.get_data(cache=False)
-
-    print("SECRET FROM ENV:", endpoint_secret)
-    print("RAW BODY:", payload[:200])
-
-    event = stripe.Webhook.construct_event(
-        payload,
-        sig_header,
-        endpoint_secret
-    )
+    
+    try:
+        
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            endpoint_secret
+        )
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
     if event["type"] != "checkout.session.completed":
         return jsonify({"status": "ignored"}), 200
@@ -149,37 +193,57 @@ def stripe_webhook():
 
     if session["payment_status"] != "paid":
         return jsonify({"status": "unpaid"}), 200
-
+    
+    metadata = session.get("metadata", {})
+    checkout_type = metadata.get("type")
+    
     stripe_session_id = session["id"]
+    
+    if checkout_type == "payment":
+        order_id = metadata.get("order_id")
 
-    order = Order.query.filter_by(
-        stripe_session_id=stripe_session_id
-    ).first()
+        order = Order.query.get(order_id)
+    
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
+        
+        order.status = "paid"
+            
 
-    if not order:
-        return jsonify({"error": "Order not found"}), 404
+        #  2. descontar stock
+        for item in order.order_items:
+            product = item.product
+            product.stock -= item.quantity
 
-    #  1. marcar pagado
-    order.status = "paid"
+        #  3. crear payment
+        payment = Payment(
+            user_id=order.user_id,
+            order_id=order.id,
+            amount=order.total_price,
+            payment_method="stripe",
+            status=PaymentStatus.paid,
+            stripe_session_id=stripe_session_id,
+            created_at=datetime.now(UTC),
+        )
 
-    #  2. descontar stock
-    for item in order.order_items:
-        product = item.product
-        product.stock -= item.quantity
+        db.session.add(payment)
+        
+    elif checkout_type == "subscription":
 
-    #  3. crear payment
-    payment = Payment(
-        user_id=order.user_id,
-        order_id=order.id,
-        amount=order.total_price,
-        payment_method="stripe",
-        status=PaymentStatus.paid,
-        stripe_session_id=stripe_session_id,
-        created_at=datetime.now(UTC),
-    )
+        user_id = metadata.get("user_id")
+        plan_id = metadata.get("plan_id")
 
-    db.session.add(payment)
-
+        subscription = Subscription(
+            user_id=user_id,
+            plan_id=plan_id,
+            stripe_subscription_id=session["subscription"],
+            status="active",
+            created_at=datetime.now(UTC),
+        )
+        
+        db.session.add(subscription)
+    db.session.commit()
+        
     cart = Cart(
         user_id=order.user_id,
         created_at=datetime.now(UTC)
@@ -196,7 +260,7 @@ def stripe_webhook():
         )
         db.session.add(cart_item)
 
-    db.session.commit()
+    db.session.commit() 
 
     return jsonify({"status": "success"}), 200
 

@@ -72,7 +72,7 @@ services.getProducts = async () => {
         return data.results || data;
 
     } catch (error) {
-        console.error("getProducts error:", error);
+        console.error("getProducts error", error);
         return [];
     }
 };
