@@ -78,7 +78,7 @@ export function ImageUploader() {
       {error && <p style={{ color: "red", marginTop: "15px" }}>{error}</p>}
 
       {/* Vista previa del resultado exitoso */}
-      {/*{imageUrl && (
+     {imageUrl && (
         <div style={{ marginTop: "20px" }}>
           <p style={{ color: "green", fontWeight: "bold" }}>
             ¡Imagen guardada y optimizada con éxito!
@@ -93,7 +93,7 @@ export function ImageUploader() {
             {imageUrl}
           </code>
         </div>
-      )}*/}
+      )}
     </div>
   );
 }
