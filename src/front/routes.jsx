@@ -18,6 +18,7 @@ import Planes_de_suscripcion from "./pages/Planes_de_suscripcion"
 import Tienda from "./pages/Tienda";
 import Encuesta from "./pages/Encuesta";
 import Perfil from "./pages/Perfil";
+import Misplanes from "./pages/Misplanes";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(

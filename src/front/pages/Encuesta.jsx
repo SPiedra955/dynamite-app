@@ -293,7 +293,7 @@ const Encuesta = () => {
                 ))}
               </select>
             )}
-             {/* solo renderiza si es tipo checkbox */}
+            {/* solo renderiza si es tipo checkbox */}
             {field.type === "checkbox" && (
               <div className="d-flex flex-column gap-2 mt-1">
 
@@ -305,9 +305,9 @@ const Encuesta = () => {
                       className="form-check-input"
                       id={`${field.key}-${opt}`}
                       // checked comprueba si esta opcion esta en el array de FormDATA
-                     checked={(formData[field.key] || []).includes(opt)}
-                    //  al marcar o desmarcar llama  a la funcion handlecheckbox para actualizarlo
-                     onChange={()=>handleCheckbox(field.key,opt)}
+                      checked={(formData[field.key] || []).includes(opt)}
+                      //  al marcar o desmarcar llama  a la funcion handlecheckbox para actualizarlo
+                      onChange={() => handleCheckbox(field.key, opt)}
                     />
 
                     <label
