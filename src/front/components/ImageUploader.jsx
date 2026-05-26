@@ -55,7 +55,7 @@ export function ImageUploader() {
 
   return (
     <div className="bg-white" style={{ padding: "20px", fontFamily: "sans-serif" }}>
-      <h2>Sube una foto a tu Backend desde React</h2>
+      <h2>Subir foto de perfil</h2>
       
       {/* Input de archivo controlado por React */}
       <input 
@@ -71,7 +71,7 @@ export function ImageUploader() {
         disabled={loading || !file}
         style={{ marginLeft: "10px", cursor: "pointer" }}
       >
-        {loading ? "Subiendo..." : "Subir a Cloudinary"}
+        {loading ? "Subiendo..." : "Subir"}
       </button>
 
       {/* Manejo de errores en pantalla */}
