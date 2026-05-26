@@ -4,7 +4,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { Plans } from "../components/Plans"
 import { Navbar } from "../components/Navbar";
 
-export const Planes_de_suscripcion = () => {
+export const Subscription_plans = () => {
     return (
         <ScrollToTop>    
           <Navbar />                 

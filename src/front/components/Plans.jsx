@@ -13,7 +13,7 @@ export const Plans = () => (
           <div className="bg-dark rounded-4 p-4 h-100 d-flex flex-column">
             <h2 className="text-white text-center mb-4 fs-4 fs-md-2">Dietas a medida</h2>
             <p className="text-white">
-              Rellena nuestra encuesta y recibe en unos pocos minutos tu dieta 100% a medida para que consigas los resultados que esperas.
+              Rellena nuestra encuesta y obten una dieta 100% a medida para conseguir los resultados que deseas.
             </p>
             <ul className="list-unstyled text-white flex-grow-1 mt-3">
               <li className="mb-3"><span className="text-danger fw-bold me-2">✓</span>Dieta 100% a medida</li>

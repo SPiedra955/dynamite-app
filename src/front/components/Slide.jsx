@@ -17,10 +17,10 @@ export const Slide = () => (
   >
     <div className="d-flex flex-column align-items-center justify-content-center py-5 px-3 px-md-5">
       <h1 className="text-white text-center fw-bold fs-2 fs-md-1 pt-4">
-        EXPLOTA TODO TU POTENCIAL
+        EXPLOTA TU POTENCIAL
       </h1>
       <p className="text-center text-white my-3 fs-5 fs-md-3">
-        Nuestros planes completamente personalizados harán volar a otro nivel
+        Nuestros planes completamente personalizados te harán volar a otro nivel
       </p>
       <Link to="/subscription-plans">
         <button className="btn btn-danger rounded-pill px-4 px-md-5 m-3">

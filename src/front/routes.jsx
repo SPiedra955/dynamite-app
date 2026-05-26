@@ -14,7 +14,7 @@ import Auth from "./pages/Auth";
 import Products from "./pages/Products"
 import Success from "./pages/Success";
 import PaymentError from "./pages/PaymentError";
-import { Planes_de_suscripcion } from "./pages/Planes_de_suscripcion"
+import { Subscription_plans } from "./pages/Subscription_plans";
 import Tienda from "./pages/Tienda"
 import Encuesta from "./pages/Encuesta"
 
@@ -38,7 +38,7 @@ export const router = createBrowserRouter(
       <Route path="/products" element={<Products />} />
       <Route path="/successful-payment" element={<Success />} />
       <Route path="/payment-error" element={<PaymentError />} />
-      <Route path="/planes-de-suscripcion" element={<Planes_de_suscripcion />} />
+      <Route path="/subscription_plans" element={<Subscription_plans />} />
       <Route path="/tienda" element={<Tienda />} />
       <Route path="/encuesta" element={<Encuesta />} />
 

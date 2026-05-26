@@ -54,7 +54,7 @@ export function ImageUploader() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
+    <div className="bg-white" style={{ padding: "20px", fontFamily: "sans-serif" }}>
       <h2>Sube una foto a tu Backend desde React</h2>
       
       {/* Input de archivo controlado por React */}
