@@ -92,7 +92,7 @@ const Perfil = () => {
 
                 <div>
                     <label> Peso(kg) </label>
-                    <input type="number" name="weight" value={formData.weigth} onChange={handleChange} />
+                    <input type="number" name="weight" value={formData.weight} onChange={handleChange} />
                 </div>
 
                 <div>
