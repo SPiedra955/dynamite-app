@@ -56,7 +56,7 @@ def create_subscription_checkout():
                         "currency": "eur",
                         "product_data": {
                             "name": plan.name,
-                            "description": plan.description,
+                            # "description": plan.description,
                         },
                         "unit_amount": int(plan.price * 100),
                         "recurring": {"interval": "month"},

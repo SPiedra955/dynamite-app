@@ -49,59 +49,47 @@ export const Plans = () => {
       console.error("Error en pago:", error);
     }
   };
-   
+
   return (
-    
-        <div className="bg-danger w-100 py-5">
 
-            <div className="container" id="plans">
-
-                <h1 className="text-white fw-bold mb-4">
-                    Nuestros planes
-                </h1>
-
-                <div className="row g-4">
-                    {plans.map((plan) => (
-
-                        <div
-                            key={plan.id}
-                            className="col-12 col-md-4"
-                        >
-
-                            <div className="bg-dark rounded-4 p-4 h-100 d-flex flex-column">
-
-                                <h2 className="text-white text-center mb-4 fs-4 fs-md-2">
-                                    {plan.name}
-                                </h2>
-
-                                <div
-                                    className="text-white"
-                                    dangerouslySetInnerHTML={{
-                                        __html: plan.description
-                                    }}
-                                />
-
-                                <div className="text-center mt-auto pt-4">
-
-                                    <p className="text-white fw-bold fs-5">
-                                        Precio: {plan.price}€
-                                    </p>
-
-                                    <button
-                                        className="btn btn-danger rounded-pill px-5"
-                                        onClick={() => handleBuy(plan)}
-                                    >
-                                        Comprar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+    <div className="bg-danger w-100 py-5">
+      <div className="container" id="plans">
+        <h1 className="text-white fw-bold mb-4">
+          Nuestros planes
+        </h1>
+        <div className="row g-4">
+          {plans.map((plan) => (
+            <div
+              key={plan.id}
+              className="col-12 col-md-4"
+            >
+              <div className="bg-dark rounded-4 p-4 h-100 d-flex flex-column">
+                <h2 className="text-white text-center mb-4 fs-4 fs-md-2">
+                  {plan.name}
+                </h2>
+                <div
+                  className="text-white"
+                  dangerouslySetInnerHTML={{
+                    __html: plan.description
+                  }}
+                />
+                <div className="text-center mt-auto pt-4">
+                  <p className="text-white fw-bold fs-5">
+                    Precio: {plan.price}€
+                  </p>
+                  <button
+                    className="btn btn-danger rounded-pill px-5"
+                    onClick={() => handleBuy(plan)}
+                  >
+                    Comprar
+                  </button>
                 </div>
-
+              </div>
             </div>
-
+          ))}
         </div>
+      </div>
+    </div>
   )
 }
 
