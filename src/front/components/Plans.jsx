@@ -49,49 +49,59 @@ export const Plans = () => {
       console.error("Error en pago:", error);
     }
   };
-
-
+   
   return (
-    <div className="bg-danger w-100 py-5">
-      <div className="container">
+    
+        <div className="bg-danger w-100 py-5">
 
-        {/* Título */}
-        <h1 className="text-white fw-bold mb-4">Nuestros planes</h1>
+            <div className="container">
 
-        <div className="row g-4">
+                <h1 className="text-white fw-bold mb-4">
+                    Nuestros planes
+                </h1>
 
-          {plans.map((plan) => {
-            return (
-              <div key={plan.id} className="col-12 col-md-4">
-                <div className="bg-dark rounded-4 p-4 h-100 d-flex flex-column">
+                <div className="row g-4">
+                    {plans.map((plan) => (
 
-                  <h2 className="text-white text-center mb-4">
-                    {plan.name}
-                  </h2>
+                        <div
+                            key={plan.id}
+                            className="col-12 col-md-4"
+                        >
 
-                  <p className="text-white">
-                    {plan.description}
-                  </p>
+                            <div className="bg-dark rounded-4 p-4 h-100 d-flex flex-column">
 
-                  <div className="text-center mt-auto">
+                                <h2 className="text-white text-center mb-4 fs-4 fs-md-2">
+                                    {plan.name}
+                                </h2>
 
-                    <p className="text-white fw-bold fs-5">
-                      Precio: {plan.price}€
-                    </p>
+                                <div
+                                    className="text-white"
+                                    dangerouslySetInnerHTML={{
+                                        __html: plan.description
+                                    }}
+                                />
 
-                    <button
-                      className="btn-secondary" onClick={() => handleBuy(plan)}
-                    >Comprar</button>
+                                <div className="text-center mt-auto pt-4">
 
-                  </div>
+                                    <p className="text-white fw-bold fs-5">
+                                        Precio: {plan.price}€
+                                    </p>
 
+                                    <button
+                                        className="btn btn-danger rounded-pill px-5"
+                                        onClick={() => handleBuy(plan)}
+                                    >
+                                        Comprar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-              </div>
-            );
-          })}
+
+            </div>
+
         </div>
-      </div>
-    </div>
   )
 }
 

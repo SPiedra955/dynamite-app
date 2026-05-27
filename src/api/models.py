@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from flask_sqlalchemy import SQLAlchemy  # type: ignore
-from sqlalchemy import String, Boolean, ForeignKey, DateTime, Numeric, Enum  # type: ignore
+from sqlalchemy import String, Boolean, ForeignKey, DateTime, Numeric, Text, Enum  # type: ignore
 from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 import enum
 
@@ -202,11 +202,11 @@ class SubscriptionPlan(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    name: Mapped[str] = mapped_column(String(50), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
-    description: Mapped[str] = mapped_column(String(255), nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
 
     # Relationships
     subscriptions = relationship("Subscription", back_populates="plan")
