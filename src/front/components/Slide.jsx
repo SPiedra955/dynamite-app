@@ -6,7 +6,7 @@ export const Slide = () => (
 
   <div className="w-100 d-flex align-items-center justify-content-center position-relative"
       style={{
-        backgroundImage: "url('https://res.cloudinary.com/dr5mzsq8w/image/upload/f_auto,q_auto/v1/usuarios_web/aldndchyikd22ilb2tsw')",
+        backgroundImage: "url('https://res.cloudinary.com/dr5mzsq8w/image/upload/v1779817647/mujer-top-negro-esta-haciendo-flexiones-cinta-rodante_188544-21502_slnrvg.avif')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         minHeight: "500px",
@@ -22,11 +22,9 @@ export const Slide = () => (
       <p className="text-center text-white my-3 fs-5 fs-md-3">
         Nuestros planes completamente personalizados te harán volar a otro nivel
       </p>
-      <Link to="/subscription-plans">
-        <button className="btn btn-danger rounded-pill px-4 px-md-5 m-3">
-          Saber más
-        </button>
-      </Link>
+      <Link to="/subscription_plans">
+                <button className="btn btn-danger rounded-pill px-5">Comprar</button>
+              </Link>
     </div>
   </div>
 </div>

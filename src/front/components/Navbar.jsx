@@ -81,8 +81,7 @@ export const Navbar = () => {
 					{/* Links */}
 					<div className="navbar-nav ms-auto align-items-lg-center gap-lg-4">
 
-						<Link
-							to="/"
+						<Link to="/subscription_plans"
 							className="nav-link text-light"
 						>
 							Planes

@@ -1,30 +1,27 @@
-import { Link } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import services from "../services/apiServices";
 
 export const CheckSub = () => {
     const { store, dispatch } = useGlobalReducer();
+    const navigate = useNavigate();
+
     useEffect(() => {
         services.isActive().then(data => {
+            const isActive = data.data?.active || false;
             dispatch({
                 type: "setSubscriptionPlan",
-                payload: data.data?.active || false
+                payload: isActive
             });
+
+            // Redirige según el estado de la suscripción
+            if (isActive) {
+                navigate("/dashboard"); // ✅ tiene suscripción → va al dashboard
+            }
+            // Si no tiene, se queda en el home normalmente
         });
     }, []);
 
-
-
-
-    return (
-        <div className="container d-flex justify-content-center align-items-center vh-100">
-            <h3 className="text-center mb-3">
-
-                {store.sub ? "Active subscription" : "No subscription"}
-
-            </h3>
-        </div>
-    )
-}
+    return null; // No renderiza nada visible
+};

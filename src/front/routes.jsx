@@ -27,21 +27,18 @@ export const router = createBrowserRouter(
     // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
 
     // Root Route: All navigation will start from here.
-    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
-
-      {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-      <Route path="/" element={<Home />} />
-      <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
-      <Route path="/demo" element={<Demo />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/authentication" element={<Auth />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/successful-payment" element={<Success />} />
-      <Route path="/payment-error" element={<PaymentError />} />
-      <Route path="/subscription_plans" element={<Subscription_plans />} />
-      <Route path="/tienda" element={<Tienda />} />
-      <Route path="/encuesta" element={<Encuesta />} />
-
-    </Route>
+  <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
+  <Route index element={<Home />} />
+  <Route path="/single/:theId" element={<Single />} />
+  <Route path="/demo" element={<Demo />} />
+  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/authentication" element={<Auth />} />
+  <Route path="/products" element={<Products />} />
+  <Route path="/successful-payment" element={<Success />} />
+  <Route path="/payment-error" element={<PaymentError />} />
+  <Route path="/subscription_plans" element={<Subscription_plans />} />
+  <Route path="/tienda" element={<Tienda />} />
+  <Route path="/encuesta" element={<Encuesta />} />
+</Route>
   )
 );

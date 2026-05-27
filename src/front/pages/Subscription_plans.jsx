@@ -1,15 +1,10 @@
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer";
-import { Plans } from "../components/Plans"
-import { Navbar } from "../components/Navbar";
+import { Plans } from "../components/Plans";
+import ScrollToTop from "../components/ScrollToTop";
 
 export const Subscription_plans = () => {
     return (
         <ScrollToTop>    
-          <Navbar />                 
           <Plans /> 
-          <Footer />        
         </ScrollToTop>
     )
 };

@@ -1,6 +1,11 @@
 import React, { useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { CheckSub } from "../components/CheckSub.jsx";
+import { Slide } from "../components/Slide";
+import { Card } from "../components/Card";
+import { Plans } from "../components/Plans";
+import { Separator } from "../components/Separator";
+import { ProfileImageUploader } from "../components/ProfileImageUploader";
 
 export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
@@ -24,7 +29,11 @@ export const Home = () => {
 
   return (
     <div>
-      <CheckSub />     
+      <Slide />
+      <Card />
+      <ProfileImageUploader />
+      <Plans />
+      <Separator />
     </div>
   );
 };

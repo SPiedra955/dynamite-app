@@ -22,7 +22,7 @@ export const Card = () => {
           {/* Imagen a la derecha */}
           <div className="col-12 col-md-6">
             <img
-              src="https://sportrade.es/wp-content/uploads/2024/08/13_Bog_entrenamiento_funcional.jpg"
+              src="https://res.cloudinary.com/dr5mzsq8w/image/upload/v1779817716/13_Bog_entrenamiento_funcional_c4lora.jpg"
               className="img-fluid rounded-3 w-100 object-fit-cover"
               style={{ maxHeight: "400px" }}
               alt="Entrenamiento funcional"
@@ -39,7 +39,7 @@ export const Card = () => {
           {/* Imagen a la izquierda */}
           <div className="col-12 col-md-6">
             <img
-              src="https://i.blogs.es/f2f4aa/istock_000058017076_small/1366_2000.jpg"
+              src="https://res.cloudinary.com/dr5mzsq8w/image/upload/v1779817763/1366_2000_bo9qaz.jpg"
               className="img-fluid rounded-3 w-100 object-fit-cover"
               style={{ maxHeight: "400px" }}
               alt="Entrenamiento funcional"

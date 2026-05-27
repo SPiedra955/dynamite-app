@@ -4,7 +4,7 @@ import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
 from flask import Blueprint, request, jsonify
 
-upload_api = Blueprint('upload_api', __name__)
+upload_api = Blueprint('upload_api', __name__)  # ✅ Primero el Blueprint
 
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -41,3 +41,15 @@ def upload_image():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Error al procesar la imagen"}), 500
+
+@upload_api.route('/upload/<path:public_id>', methods=['DELETE'])  # ✅ Después del Blueprint
+def delete_image(public_id):
+    try:
+        result = cloudinary.uploader.destroy(public_id)
+        if result.get("result") == "ok":
+            return jsonify({"mensaje": "Imagen eliminada correctamente"}), 200
+        else:
+            return jsonify({"error": "No se pudo eliminar la imagen"}), 400
+    except Exception as e:
+        print(f"Error al eliminar: {e}")
+        return jsonify({"error": "Error en el servidor"}), 500

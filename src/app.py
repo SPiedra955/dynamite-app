@@ -14,10 +14,10 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 
-app = Flask(__name__)  # ✅ Solo se crea una vez
+app = Flask(__name__)  
 app.url_map.strict_slashes = False
 
-# ✅ CORS justo después, una sola vez
+
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # database configuration

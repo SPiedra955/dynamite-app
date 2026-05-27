@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export const Plans = () => (
   <div className="bg-danger w-100 py-5">
-    <div className="container">
+    <div className="container py-5">
 
       <h1 className="text-white fw-bold mb-4 fs-3 fs-md-1">Nuestros planes</h1>
 
@@ -24,7 +24,7 @@ export const Plans = () => (
             </ul>
             <div className="text-center mt-4">
               <p className="text-white fw-bold fs-5">Precio: 6,90€</p>
-              <Link to="/planes-de-suscripcion">
+              <Link to="/subscription_plans">
                 <button className="btn btn-danger rounded-pill px-5">Comprar</button>
               </Link>
             </div>
@@ -47,7 +47,9 @@ export const Plans = () => (
             </ul>
             <div className="text-center mt-4">
               <p className="text-white fw-bold fs-5">Precio: 6,90€</p>
-              <button className="btn btn-danger rounded-pill px-5">Comprar</button>
+              <Link to="/subscription_plans">
+                <button className="btn btn-danger rounded-pill px-5">Comprar</button>
+              </Link>
             </div>
           </div>
         </div>
@@ -70,7 +72,9 @@ export const Plans = () => (
             </ul>
             <div className="text-center mt-4">
               <p className="text-white fw-bold fs-5">Precio: 9,90€</p>
-              <button className="btn btn-danger rounded-pill px-5">Comprar</button>
+              <Link to="/subscription_plans">
+                <button className="btn btn-danger rounded-pill px-5">Comprar</button>
+              </Link>
             </div>
           </div>
         </div>
