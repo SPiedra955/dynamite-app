@@ -32,8 +32,8 @@ def get_subscriptions():
 # GET SUBSCRIPTIONS BY USER
 
 
-@api.route('/orders/<int:user_id>', methods=['GET'])
-def get_user_orders(user_id):
+@api.route('/subscriptions/<int:user_id>', methods=['GET'])
+def get_user_subscriptions(user_id):
     # execute() porque buscamos por user_id que NO es la primary key
     subs = db.session.execute(select(Subscription).where(
         Subscription.user_id == user_id)).scalars().all()
