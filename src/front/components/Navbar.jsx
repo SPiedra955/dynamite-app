@@ -56,8 +56,12 @@ export const Navbar = () => {
   	style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", zIndex: 10 }}>	
   			<div className="container">
     
-			<Link to="/" className="navbar-brand fw-bold">
-			React Boilerplate
+			<Link to="/" className="navbar-brand">
+				<img 
+					src="https://res.cloudinary.com/dr5mzsq8w/image/upload/f_auto,q_auto/v1/usuarios_web/bkfknqisgmisx4qeaqqg" 
+					alt="Logo" 
+					style={{ height: "40px" }}
+				/>
 			</Link>
 
 			<button
