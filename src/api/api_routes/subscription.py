@@ -20,7 +20,13 @@ def check_subscription():
     return jsonify({"success": True, "data": sub.serialize()}), 200
 
 
-# GET ALL SUBSCRIPTIONS
+# GET ALL SUBSCRIPTIONS PLANS
+
+@api.route('/subscription-plans', methods=['GET'])
+def get_subscription_plans():
+    plans = db.session.execute(select(SubscriptionPlan)).scalars().all()
+    transform = [plan.serialize() for plan in plans]
+    return jsonify({"success": True, "data": transform}), 200
 
 
 @api.route('/subscriptions', methods=['GET'])

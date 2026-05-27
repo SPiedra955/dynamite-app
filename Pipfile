@@ -20,15 +20,12 @@ flask-cors = "*"
 flask-jwt-extended = "*"
 flask = "*"
 python-dotenv = "*"
-<<<<<<< HEAD
 kagglehub = "*"
 kaggle = "*"
 pandas = "*"
 cloudinary = "*"
-=======
 stripe = "*"
 google-generativeai = "*"
->>>>>>> 0cdd4dad206412c5d088ae4d0f7df9cc707be892
 
 [requires]
 python_version = "3.13"
