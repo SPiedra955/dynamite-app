@@ -239,6 +239,12 @@ class Subscription(db.Model):
     active: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False)
 
+    stripe_subscription_id: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False)
+
     cancel_day: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # Relationships
@@ -254,6 +260,7 @@ class Subscription(db.Model):
             "user_id": self.user_id,
             "plan_id": self.plan_id,
             "active": self.active,
+            "created_at": self.created_at,
             "cancel_day": self.cancel_day,
         }
 

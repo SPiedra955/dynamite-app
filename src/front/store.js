@@ -12,6 +12,7 @@ export const initialStore = () => {
     user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
     products: [],
+    subscriptionPlans: [],
     cart: normalizedCart,
     sub: false
   }
@@ -19,6 +20,12 @@ export const initialStore = () => {
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
+    
+    case 'getSubsPlan':
+      return {
+        ...store,
+        subscriptionPlans: action.payload
+      };
 
     case "setSubscriptionPlan":
       return {

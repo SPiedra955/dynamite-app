@@ -29,7 +29,6 @@ def get_subscription_plan(plan_id):
 
 # CREATE SUBSCRIPTION PLAN
 
-jwt_required
 @api.route('/subscription-plans', methods=['POST'])
 def create_subscription_plan():
     body = request.get_json()

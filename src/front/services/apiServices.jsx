@@ -90,7 +90,8 @@ services.isActive = async () => {
         });
 
         const data = await resp.json();
-
+        console.log("isActive response:", data);
+        localStorage.setItem("subIsActive", JSON.stringify(data))
         if (!resp.ok) {
             throw new Error(data.msg || "subscription error");
         }
@@ -103,3 +104,25 @@ services.isActive = async () => {
     }
 }
 export default services;
+
+
+/* GET SUBSCRIPTION PLANS */
+
+services.getSubscriptions = async () => {
+    try {
+        const resp = await fetch(`${url}/api/subscription-plans`);
+
+        if (!resp.ok) {
+            throw new Error("Something went wrong");
+        }
+
+        const data = await resp.json();
+        console.log(data)
+
+        return data.results || data;
+
+    } catch (error) {
+        console.error("getSubscriptionPlans error", error);
+        return [];
+    }
+};
