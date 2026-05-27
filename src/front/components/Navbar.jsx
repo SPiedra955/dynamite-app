@@ -3,6 +3,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { HashLink } from 'react-router-hash-link'
 
 export const Navbar = () => {
 
@@ -77,12 +78,12 @@ export const Navbar = () => {
 					{/* Links */}
 					<div className="navbar-nav ms-auto align-items-lg-center gap-lg-4">
 
-						<Link
-							to="/"
+						<HashLink
+							to="/#plans"
 							className="nav-link text-light"
 						>
 							Planes
-						</Link>
+						</HashLink>
 
 						<Link
 							to="/products"

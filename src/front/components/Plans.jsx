@@ -54,7 +54,7 @@ export const Plans = () => {
     
         <div className="bg-danger w-100 py-5">
 
-            <div className="container">
+            <div className="container" id="plans">
 
                 <h1 className="text-white fw-bold mb-4">
                     Nuestros planes
