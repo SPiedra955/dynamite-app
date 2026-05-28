@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import services from "../services/apiServices";
 
 const Products = () => {
     const { store, dispatch } = useGlobalReducer();
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 8;
 
     useEffect(() => {
         services.getProducts().then(data => {
@@ -16,6 +18,11 @@ const Products = () => {
 
     const prod = store.products || [];
 
+    // Productos de la página actual
+    const indexStart = (currentPage - 1) * productsPerPage;
+    const currentProducts = prod.slice(indexStart, indexStart + productsPerPage);
+    const totalPages = Math.ceil(prod.length / productsPerPage);
+
     return (
         <div className="container py-5">
             <div className="text-center mb-5">
@@ -26,7 +33,7 @@ const Products = () => {
             </div>
 
             <div className="row g-4">
-                {prod.map(product => {
+                {currentProducts.map(product => {
                     const inCart = store.cart.some(
                         item => item.id === product.id
                     );
@@ -61,36 +68,22 @@ const Products = () => {
                                             <span className="product-price">
                                                 {product.price} €
                                             </span>
-
                                             <span className="badge bg-dark">
                                                 Fitness
                                             </span>
                                         </div>
 
                                         <button
-                                            className={`btn w-100 ${
-                                                inCart
-                                                    ? "btn-outline-danger"
-                                                    : "btn-dark"
-                                            }`}
+                                            className={`btn w-100 ${inCart ? "btn-outline-danger" : "btn-danger"}`}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-
                                                 inCart
-                                                    ? dispatch({
-                                                          type: "deleteItem",
-                                                          payload: product.id,
-                                                      })
-                                                    : dispatch({
-                                                          type: "addItem",
-                                                          payload: product,
-                                                      });
+                                                    ? dispatch({ type: "deleteItem", payload: product.id })
+                                                    : dispatch({ type: "addItem", payload: product });
                                             }}
                                         >
-                                            {inCart
-                                                ? "Remove from cart"
-                                                : "Add to cart"}
+                                            {inCart ? "Remove from cart" : "Add to cart"}
                                         </button>
                                     </div>
                                 </div>
@@ -99,6 +92,27 @@ const Products = () => {
                     );
                 })}
             </div>
+
+            {/* Paginación */}
+                {totalPages > 1 && (
+                    <div className="d-flex justify-content-center align-items-center gap-3 mt-5">
+                    <button
+                        className="btn btn-danger"
+                        onClick={() => setCurrentPage(p => p - 1)}
+                        disabled={currentPage === 1}
+                        >
+                        ← Anterior
+                    </button>
+
+                    <button
+                        className="btn btn-danger"
+                        onClick={() => setCurrentPage(p => p + 1)}
+                        disabled={currentPage === totalPages}
+                        >
+                        Siguiente →
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

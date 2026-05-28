@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 
 export function ProfileImageUploader() {
@@ -8,6 +9,7 @@ export function ProfileImageUploader() {
   const [publicId, setPublicId] = useState("");
   const [error, setError] = useState("");
   const [preview, setPreview] = useState("");
+  const { dispatch } = useGlobalReducer();
   const fileInputRef = useRef(null);
 
   // Captura el archivo y genera una preview local antes de subir
@@ -39,6 +41,7 @@ export function ProfileImageUploader() {
         const data = await response.json();
         setImageUrl(data.url);
         setPublicId(data.public_id);
+        dispatch({ type: "set_profile_image", payload: data.url });
         setPreview("");
         setFile(null);
         // Limpia el input para poder volver a seleccionar el mismo archivo
@@ -67,6 +70,7 @@ export function ProfileImageUploader() {
 
     if (response.ok) {
       setImageUrl("");
+      dispatch({ type: "set_profile_image", payload: "" });
       setPublicId("");
       setPreview("");
       setFile(null);
