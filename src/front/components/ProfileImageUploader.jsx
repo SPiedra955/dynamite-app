@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 
+
 export function ProfileImageUploader() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -223,7 +224,7 @@ export function ProfileImageUploader() {
           align-items: center;
           gap: 6px;
           font-size: 12px;
-          color: #6366f1;
+          color: #ffffff;
         }
 
         .piu-spinner {
@@ -242,14 +243,14 @@ export function ProfileImageUploader() {
 
         .piu-error {
           font-size: 11.5px;
-          color: #ef4444;
+          color: #ffffff;
           text-align: center;
           line-height: 1.4;
         }
 
         .piu-label {
           font-size: 12px;
-          color: #6b7280;
+          color: #ffffff;
           text-align: center;
         }
       `}</style>

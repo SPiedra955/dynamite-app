@@ -22,9 +22,9 @@ export const Slide = () => (
       <p className="text-center text-white my-3 fs-5 fs-md-3">
         Nuestros planes completamente personalizados te harán volar a otro nivel
       </p>
-      <Link to="/subscription_plans">
-                <button className="btn btn-danger rounded-pill px-5">Comprar</button>
-              </Link>
+      <a href="#plans" className="btn btn-danger rounded-pill px-5">
+        Comprar
+      </a>
     </div>
   </div>
 </div>

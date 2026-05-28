@@ -13,9 +13,9 @@ export const Card = () => {
                 This is a wider card with supporting text below as a natural
                 lead-in to additional content.
               </p>
-              <button className="btn btn-danger rounded-pill px-5 mt-3">
+              <a href="#plans" className="btn btn-danger rounded-pill px-5">
                 Empezar plan
-              </button>
+              </a>
             </div>
           </div>
 
@@ -55,9 +55,9 @@ export const Card = () => {
                 This is a wider card with supporting text below as a natural
                 lead-in to additional content.
               </p>
-              <button className="btn btn-danger rounded-pill px-5 mt-3">
+              <a href="#plans" className="btn btn-danger rounded-pill px-5">
                 Empezar plan
-              </button>
+              </a>
             </div>
           </div>
 

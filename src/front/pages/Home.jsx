@@ -28,12 +28,13 @@ export const Home = () => {
   }, []);
 
   return (
-    <div>
-      <Slide />
-      <Card />
-      <ProfileImageUploader />
+  <div>
+    <Slide />
+    <Card />
+    <div id="plans"> 
       <Plans />
-      <Separator />
     </div>
-  );
+    <Separator />
+  </div>
+);
 };

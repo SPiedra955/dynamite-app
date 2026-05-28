@@ -66,8 +66,8 @@ export const Plans = () => {
   return (
 
     <div className="bg-danger w-100 py-5">
-      <div className="container" id="plans">
-        <h1 className="text-white fw-bold mb-4">
+      <div className="container py-5" id="plans">
+        <h1 className="text-white fw-bold mb-4 p-5">
           Nuestros planes
         </h1>
         <div className="row g-4">
