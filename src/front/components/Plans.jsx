@@ -3,6 +3,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
 import services from "../services/apiServices";
 import { useEffect } from "react";
+import Swal from "sweetalert2";
 
 export const Plans = () => {
 
@@ -22,7 +23,19 @@ export const Plans = () => {
   const plans = store.subscriptionPlans || [];
 
   const handleBuy = async (plan) => {
+
     try {
+
+      if (!token) {
+        Swal.fire({
+          icon: "warning",
+          title: "Debes iniciar sesión",
+          text: "Inicia sesión para continuar con la compra",
+          confirmButtonColor: "#dc3545",
+        });
+
+        return;
+      }
 
       const res = await fetch(`${url}/api/create-subscription-checkout`, {
         method: "POST",

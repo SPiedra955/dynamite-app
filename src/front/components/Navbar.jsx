@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { HashLink } from 'react-router-hash-link'
+import services from "../services/apiServices";
+import Swal from "sweetalert2";
 
 export const Navbar = () => {
 
@@ -20,6 +22,17 @@ export const Navbar = () => {
 
 	const handleBuy = async (product) => {
 		try {
+
+			if (!token) {
+				Swal.fire({
+					icon: "warning",
+					title: "Debes iniciar sesión",
+					text: "Inicia sesión para continuar con la compra",
+					confirmButtonColor: "#dc3545",
+				});
+
+				return;
+			}
 
 			const res = await fetch(`${url}/api/create-checkout-session`, {
 				method: "POST",
@@ -50,31 +63,35 @@ export const Navbar = () => {
 		}
 	};
 
+	const closeSession = () => {
+		services.logout()
+		navigate("/")
+	}
 
 	return (
-		<nav className="navbar navbar-expand-lg navbar-dark position-fixed top-0 start-0 w-100" 
-  	style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", zIndex: 10 }}>	
-  			<div className="container">
-    
-			<Link to="/" className="navbar-brand">
-				<img 
-					src="https://res.cloudinary.com/dr5mzsq8w/image/upload/f_auto,q_auto/v1/usuarios_web/bkfknqisgmisx4qeaqqg" 
-					alt="Logo" 
-					style={{ height: "40px" }}
-				/>
-			</Link>
+		<nav className="navbar navbar-expand-lg navbar-dark position-fixed top-0 start-0 w-100"
+			style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", zIndex: 10 }}>
+			<div className="container">
 
-			<button
-			className="navbar-toggler"
-			type="button"
-			data-bs-toggle="collapse"
-			data-bs-target="#navbarMenu"
-			aria-controls="navbarMenu"
-			aria-expanded="false"
-			aria-label="Toggle navigation"
-			>
-			<span className="navbar-toggler-icon"></span>
-			</button>
+				<Link to="/" className="navbar-brand">
+					<img
+						src="https://res.cloudinary.com/dr5mzsq8w/image/upload/f_auto,q_auto/v1/usuarios_web/bkfknqisgmisx4qeaqqg"
+						alt="Logo"
+						style={{ height: "40px" }}
+					/>
+				</Link>
+
+				<button
+					className="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarMenu"
+					aria-controls="navbarMenu"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span className="navbar-toggler-icon"></span>
+				</button>
 
 				{/* Menu */}
 				<div className="collapse navbar-collapse" id="navbarMenu">
@@ -212,15 +229,21 @@ export const Navbar = () => {
 						</div>
 
 						{/* Login */}
-						<Link
-							to="/authentication"
-							className="mt-3 mt-lg-0"
-						>
-							<button className="btn btn-danger rounded-pill px-4">
+						{token == null ? (
+							<Link
+								to="/authentication"
+								className="btn btn-danger rounded-pill px-4 mt-3 mt-lg-0"
+							>
 								Login
+							</Link>
+						) : (
+							<button
+								className="btn btn-danger rounded-pill px-4 mt-3 mt-lg-0"
+								onClick={closeSession}
+							>
+								Logout
 							</button>
-						</Link>
-
+						)}
 					</div>
 				</div>
 			</div>
