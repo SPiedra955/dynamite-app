@@ -295,7 +295,7 @@ def update_myplan(plan_id):
 
 # DELETE MY PLAN
 
-@api.route('/delete/myplan/<int:plan_id>', methods=['DELETE'])
+@api.route('/myplans/<int:plan_id>', methods=['DELETE'])
 def delete_myplan(plan_id):
 
     myplan = db.session.get(MyPlan, plan_id)

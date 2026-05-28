@@ -244,11 +244,9 @@ const Encuesta = () => {
         return;
       }
       // redirige al perfil para ver el plan generado
-      navigate("/perfil", {
-        state: { tab: "planes", newPlanId: results[0].data.id },
-      });
+      navigate("/misplanes");
     } catch {
-      setError("No se pudo conectar con el servidor.");
+      navigate("/misplanes")
     } finally {
       setLoading(false);
     }
