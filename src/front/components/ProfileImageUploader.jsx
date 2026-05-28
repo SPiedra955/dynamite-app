@@ -4,12 +4,12 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export function ProfileImageUploader() {
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [publicId, setPublicId] = useState("");
+  const [loading, setLoading] = useState(false);  
+  const { store, dispatch } = useGlobalReducer();
+  const [imageUrl, setImageUrl] = useState(store.user?.profile_image || "");
+  const [publicId, setPublicId] = useState(store.user?.profile_image_id || "");
   const [error, setError] = useState("");
   const [preview, setPreview] = useState("");
-  const { dispatch } = useGlobalReducer();
   const fileInputRef = useRef(null);
 
   // Captura el archivo y genera una preview local antes de subir
