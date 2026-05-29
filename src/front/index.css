@@ -68,3 +68,19 @@ body {
     padding: 10px;
     font-weight: 600;
 }
+
+.slide-bg {
+    background-image: url('https://res.cloudinary.com/dr5mzsq8w/image/upload/v1779817647/mujer-top-negro-esta-haciendo-flexiones-cinta-rodante_188544-21502_slnrvg.avif');
+    background-size: cover;
+    background-position: center;
+    min-height: 500px;
+}
+
+.slide-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    min-height: 500px;
+}
+
+.card-sales {
+        min-height: 400px;
+}

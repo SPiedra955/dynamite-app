@@ -20,11 +20,10 @@ export const Card = () => {
           </div>
 
           {/* Imagen a la derecha */}
-          <div className="col-12 col-md-6">
+          <div className="cards-sales col-12 col-md-6">
             <img
               src="https://res.cloudinary.com/dr5mzsq8w/image/upload/v1779817716/13_Bog_entrenamiento_funcional_c4lora.jpg"
               className="img-fluid rounded-3 w-100 object-fit-cover"
-              style={{ maxHeight: "400px" }}
               alt="Entrenamiento funcional"
             />
           </div>
@@ -37,12 +36,10 @@ export const Card = () => {
         <div className="row align-items-center g-4">
 
           {/* Imagen a la izquierda */}
-          <div className="col-12 col-md-6">
+          <div className="cards-sales col-12 col-md-6">
             <img
               src="https://res.cloudinary.com/dr5mzsq8w/image/upload/v1779817763/1366_2000_bo9qaz.jpg"
-              className="img-fluid rounded-3 w-100 object-fit-cover"
-              style={{ maxHeight: "400px" }}
-              alt="Entrenamiento funcional"
+              className="img-fluid rounded-3 w-100 object-fit-cover" alt="Entrenamiento funcional"
             />
           </div>
 

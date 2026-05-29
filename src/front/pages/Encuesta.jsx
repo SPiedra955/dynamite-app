@@ -252,7 +252,7 @@ const Encuesta = () => {
     }
   };
   return (
-    <div className="bg-dark min-vh-100 py-5">
+    <div className="bg-black min-vh-100 py-5 mt-5">
       <div className="container col-md-8 col-lg-6 mx-auto">
         <h5 className="text-white mb-1"> Tu plan personalizado</h5>
         <div className="border border-danger border-top my-3"></div>
