@@ -41,6 +41,6 @@ export const router = createBrowserRouter(
   <Route path="/subscription_plans" element={<Subscription_plans />} />
   <Route path="/tienda" element={<Tienda />} />
   <Route path="/encuesta" element={<Encuesta />} />
-      <Route path="/perfil" element={<Perfil />} /></Route>
+  <Route path="/perfil" element={<Perfil />} /></Route>
   )
 );

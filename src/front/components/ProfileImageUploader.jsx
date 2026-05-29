@@ -4,7 +4,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export function ProfileImageUploader() {
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);  
+  const [loading, setLoading] = useState(false);
   const { store, dispatch } = useGlobalReducer();
   const [imageUrl, setImageUrl] = useState(store.user?.profile_image || "");
   const [publicId, setPublicId] = useState(store.user?.profile_image_id || "");
@@ -41,7 +41,7 @@ export function ProfileImageUploader() {
         const data = await response.json();
         setImageUrl(data.url);
         setPublicId(data.public_id);
-        dispatch({ type: "set_profile_image", payload: data.url });
+        dispatch({ type: "setProfileImage", payload: data.url });
         setPreview("");
         setFile(null);
         // Limpia el input para poder volver a seleccionar el mismo archivo
@@ -60,29 +60,29 @@ export function ProfileImageUploader() {
   // Borra la imagen: limpia el estado local
   // Si tu backend tiene endpoint de borrado, llámalo aquí con publicId
   const handleDelete = async () => {
-  if (!publicId) return;
+    if (!publicId) return;
 
-  try {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const response = await fetch(`${backendUrl}/api/upload/${publicId}`, {
-      method: "DELETE",
-    });
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/upload/${publicId}`, {
+        method: "DELETE",
+      });
 
-    if (response.ok) {
-      setImageUrl("");
-      dispatch({ type: "set_profile_image", payload: "" });
-      setPublicId("");
-      setPreview("");
-      setFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    } else {
-      setError("No se pudo eliminar la imagen.");
+      if (response.ok) {
+        setImageUrl("");
+        dispatch({ type: "setProfileImage", payload: "" });
+        setPublicId("");
+        setPreview("");
+        setFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } else {
+        setError("No se pudo eliminar la imagen.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo conectar con el servidor.");
     }
-  } catch (err) {
-    console.error(err);
-    setError("No se pudo conectar con el servidor.");
-  }
-};
+  };
 
   // La imagen que se muestra en el avatar: primero preview local, luego la de Cloudinary
   const avatarSrc = preview || imageUrl;
@@ -270,7 +270,7 @@ export function ProfileImageUploader() {
               <div className="piu-avatar-placeholder">
                 {/* Icono de persona */}
                 <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4Z"/>
+                  <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4Z" />
                 </svg>
               </div>
             )}
@@ -278,7 +278,7 @@ export function ProfileImageUploader() {
             {/* Botón de cámara para seleccionar imagen */}
             <label className="piu-badge" title="Cambiar foto">
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5M20 4h-3.17L15 2H9L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"/>
+                <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5M20 4h-3.17L15 2H9L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" />
               </svg>
               <input
                 ref={fileInputRef}

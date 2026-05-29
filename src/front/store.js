@@ -20,7 +20,22 @@ export const initialStore = () => {
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
-    
+
+    case "setProfileImage": {
+      const updatedUser = {
+        ...store.user,
+        profile_image: action.payload
+      };
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      return {
+        ...store,
+        user: updatedUser
+      };
+    }
+
+
     case 'getSubsPlan':
       return {
         ...store,
@@ -147,17 +162,5 @@ export default function storeReducer(store, action = {}) {
         ...store,
         todos: store.todos.map((todo) => (todo.id === id ? { ...todo, background: color } : todo))
       };
-
-      case "set_profile_image":
-  const updatedUser = { ...store.user, profile_image: action.payload };
-  localStorage.setItem("user", JSON.stringify(updatedUser));
-  return {
-    ...store,
-    user: updatedUser
-  };
-
-
-    default:
-      throw Error('Unknown action.');
   }
 }
