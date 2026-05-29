@@ -1,10 +1,9 @@
-
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Planes_de_suscripcion = () => {
+const Plans = () => {
   const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
 
@@ -105,4 +104,4 @@ const Planes_de_suscripcion = () => {
   );
 };
 
-export default Planes_de_suscripcion;
+export default Plans;

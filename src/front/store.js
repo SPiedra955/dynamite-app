@@ -7,30 +7,54 @@ const normalizedCart = cartFromStorage.map(item => ({
 
 export const initialStore = () => {
   return {
-    /* WE USE LOCALSTORAGE TO SAVE THE TOKEN */
+    /* WE USE LOCALSTORAGE TO SAVE THE TOKEN AND USEFUL STUFF */
     auth: !!localStorage.getItem("token"),
     user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
     products: [],
+    subscriptionPlans: [],
     cart: normalizedCart,
-    todos: [
-      {
-        id: 1,
-        title: "Make the bed",
-        background: null,
-      },
-      {
-        id: 2,
-        title: "Do my homework",
-        background: null,
-      }
-    ]
+    sub: false
   }
 }
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
 
+    case "setProfileImage": {
+      const updatedUser = {
+        ...store.user,
+        profile_image: action.payload
+      };
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      return {
+        ...store,
+        user: updatedUser
+      };
+    }
+
+
+    case 'getSubsPlan':
+      return {
+        ...store,
+        subscriptionPlans: action.payload
+      };
+
+    case "setSubscriptionPlan":
+      return {
+        ...store,
+        sub: action.payload
+      }
+
+    case "clearCart":
+      return {
+        ...store,
+        cart: []
+      };
+
+    /* INCREASE ITEM QUANTITY IN CART */
     case "increaseQuantity":
       return {
         ...store,
@@ -41,6 +65,7 @@ export default function storeReducer(store, action = {}) {
         )
       };
 
+    /* DECREASE ITEM QUANTITY IN CART */
     case "decreaseQuantity":
       return {
         ...store,
@@ -137,7 +162,5 @@ export default function storeReducer(store, action = {}) {
         ...store,
         todos: store.todos.map((todo) => (todo.id === id ? { ...todo, background: color } : todo))
       };
-    default:
-      throw Error('Unknown action.');
   }
 }
