@@ -152,8 +152,8 @@ const Misplanes = () => {
   };
 
   return (
-    <div className="min-vh-100 py-5 mt-5 bg-black">
-      <div className="container" style={{ maxWidth: 720 }}>
+    <div className="min-vh-100 pt-5 mt-5 bg-black">
+      <div className="container">
 
         {planActive ? (
           // ── Vista detalle del plan ──

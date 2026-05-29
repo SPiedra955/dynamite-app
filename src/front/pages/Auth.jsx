@@ -38,7 +38,7 @@ const Auth = () => {
                     height: Number(formData.height),
                 },
             });
-            navigate("/dashboard");
+            navigate("/perfil");
         } catch (error) {
             console.error(error);
         }

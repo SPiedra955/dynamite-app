@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-
-// preguntas para desarollar el prompt de ejercicios
 const workout_fields = [
   {
     key: "days_per_week",
@@ -66,6 +64,7 @@ const workout_fields = [
     ],
   },
 ];
+
 const diet_fields = [
   {
     key: "activity_level",
@@ -130,66 +129,61 @@ const diet_fields = [
   },
 ];
 
-// devuelve las preguntas segun los tipos del plan elegido
-
 const buildFields = (tipos) => {
   const fields = [];
   if (tipos.includes("workout")) fields.push(...workout_fields);
   if (tipos.includes("diet")) fields.push(...diet_fields);
   return fields;
 };
+
 const Encuesta = () => {
   const { store } = useGlobalReducer();
   const navigate = useNavigate();
-  // location recoge el state de planes_de_suscripcionn
-  // plan_id : id del plan elegido
-  //tipos :["diet"],["workout"] o ["workout", "diet"] segun el plan
-
   const location = useLocation();
 
   const planId = location.state?.plan_id;
-
   const tipos = location.state?.tipos ?? [];
-
-  //  campos del formulario segun el tipo de plan
-  // Y buildFields devuelve: Si es workout → los 7 campos de workout_fields
-  // Si es dieta → los 7 campos de diet_fields
-  // Si es completo → los 14 campos de ambos juntos
-
   const fields = buildFields(tipos);
 
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  // si no llego el plan_id redirige a planes de suscripcion
+  const [countdown, setCountdown] = useState(60);
+  const [showModal, setShowModal] = useState(false);
+  const countdownRef = useRef(null);
 
   useEffect(() => {
     if (!planId) navigate("/planes_de_suscripcion");
   }, []);
 
-  // para campos de texto y select
+  // Inicia o detiene el countdown según el estado de loading
+  useEffect(() => {
+    if (loading) {
+      setCountdown(120);
+      countdownRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(countdownRef.current);
+    }
+    return () => clearInterval(countdownRef.current);
+  }, [loading]);
 
   const handleField = (key, value) =>
-    // ...prev copia todo lo anterior y asi si cambia algun valor se mantien y se añade el campo nuevo
-    // [key]: value añade o sobreescribe solo el campo nuevo
-
     setFormData((prev) => ({ ...prev, [key]: value }));
-
-  // para checkbox guarda un array con los valores seleccionados
 
   const handleCheckbox = (key, value) => {
     setFormData((prev) => {
       const current = prev[key] || [];
       if (current.includes(value)) {
-        //si ya estaba marcado lo quitamos
-
-        return {
-          ...prev,
-          [key]: current.filter((selected) => selected !== value),
-        };
+        return { ...prev, [key]: current.filter((selected) => selected !== value) };
       }
-      // si no estaba marcado lo añadimos
-
       return { ...prev, [key]: [...current, value] };
     });
   };
@@ -199,12 +193,9 @@ const Encuesta = () => {
     setError(null);
 
     try {
-      // pillamos el token de store
       const token = localStorage.getItem("token");
-
-      // pillamos datos del store
       const user = store.user;
-      // lanza una petición por cada tipo de plan si es el completo envia las 2 a la vez
+
       const requests = tipos.map(async (tipo) => {
         const payload = {
           tipo_plan: tipo,
@@ -213,7 +204,6 @@ const Encuesta = () => {
           weight: user?.weight,
           height: user?.height,
           ...formData,
-          // equipment llega como array, lo convertimos a string para el prompt,si es un array lo une con join (,) y lo pasa string
           equipment: Array.isArray(formData.equipment)
             ? formData.equipment.join(", ")
             : formData.equipment,
@@ -229,125 +219,183 @@ const Encuesta = () => {
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(payload),
-          },
+          }
         );
         const data = await resp.json();
         return data;
       });
-      //  Sirve para esperar a que todas las peticiones del array requests terminen a la vez.
+
       const results = await Promise.all(requests);
-      // Sirve para comprobar si alguna de las peticiones a Gemini falló.
       const failed = results.find((result) => !result.success);
 
       if (failed) {
         setError(failed.msg || "Error al generar el plan");
+        setLoading(false);
         return;
       }
-      // redirige al perfil para ver el plan generado
-      navigate("/misplanes");
-    } catch {
-      navigate("/misplanes")
-    } finally {
+
+      // Muestra el modal cuando termina
       setLoading(false);
+      setShowModal(true);
+
+    } catch {
+      setLoading(false);
+      setShowModal(true);
     }
   };
+
+  // Porcentaje para el arco circular del countdown
+  const radius = 54;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (countdown / 120) * circumference;
+
   return (
     <div className="bg-black min-vh-100 py-5 mt-5">
       <div className="container col-md-8 col-lg-6 mx-auto">
-        <h5 className="text-white mb-1"> Tu plan personalizado</h5>
-        <div className="border border-danger border-top my-3"></div>
-        <p className="text-white-50 small mb-4">
-          {/* para que salga si es ejercicio o dieta o lo dos juntos con un + */}
-          {tipos
-            .map((tipo) => (tipo === "workout" ? "Ejercicio" : "Dieta"))
-            .join(" + ")}
-        </p>
-        {/* renderizza las preguntas segun el tipo de plan */}
-        {fields.map((field) => (
-          <div className="mb-4" key={field.key}>
-            <label className="form-label text-white-50 small fw-semibold">
-              {field.label}
-            </label>
 
-            {field.type === "select" && (
-              <select
-                className="form-select bg-dark text-white border-secondary"
-                value={formData[field.key] || ""}
-                onChange={(e) => handleField(field.key, e.target.value)}
-              >
-                {/* opcion por defecto cuando el usuario no ha elegido nada */}
-                <option value=""> Selecciona una opcion...</option>
+        {/* Pantalla de carga con countdown */}
+        {loading && (
+          <div className="d-flex flex-column align-items-center justify-content-center py-5 gap-4">
+            <p className="text-danger text-uppercase fw-semibold small mb-0">Generando tu plan ¡en unos segundos te explotará la cabeza!</p>
+            <p className="text-secondary small text-center mb-0">Esto puede tardar hasta un par de minutos...</p>
 
-                {/* recorre el array de opciones del campo y crea una option por cada una */}
-
-                {field.options.map((opt) => (
-                  // key para que React identifique cada opcion
-                  // value es lo que se guarda en formData al elegir
-                  // opt es el texto que ve el usuario
-
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            )}
-            {/* solo renderiza si es tipo checkbox */}
-            {field.type === "checkbox" && (
-              <div className="d-flex flex-column gap-2 mt-1">
-
-                {/* recorre las opciones del campo  y crea un checkbox*/}
-                {field.options.map((opt) => (
-                  <div className="form-check" key={opt}>
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id={`${field.key}-${opt}`}
-                      // checked comprueba si esta opcion esta en el array de FormDATA
-                      checked={(formData[field.key] || []).includes(opt)}
-                      //  al marcar o desmarcar llama  a la funcion handlecheckbox para actualizarlo
-                      onChange={() => handleCheckbox(field.key, opt)}
-                    />
-
-                    <label
-                      className="form-check-label text-white-50"
-                      htmlFor={`${field.key}-${opt}`}
-                    >
-                      {opt}
-                    </label>
-                  </div>
-                ))}
+            {/* Círculo de cuenta regresiva */}
+            <div className="position-relative d-flex align-items-center justify-content-center">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                {/* Círculo de fondo */}
+                <circle
+                  cx="70" cy="70" r={radius}
+                  fill="none"
+                  stroke="#2a2a2a"
+                  strokeWidth="8"
+                />
+                {/* Arco de progreso */}
+                <circle
+                  cx="70" cy="70" r={radius}
+                  fill="none"
+                  stroke="#e63946"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={circumference - progress}
+                  transform="rotate(-90 70 70)"
+                  style={{ transition: "stroke-dashoffset 1s linear" }}
+                />
+              </svg>
+              {/* Número en el centro */}
+              <div className="position-absolute text-center">
+                <span className="text-white fw-bold" style={{ fontSize: "2.2rem" }}>{countdown}</span>
+                <p className="text-secondary mb-0" style={{ fontSize: "0.7rem" }}>segundos</p>
               </div>
-            )}
-            {field.type === "text" && (
-              <input
-                className="form-control bg-dark text-white border-secondary"
-                type="text"
-                placeholder={field.placeholder}
-                value={formData[field.key] || ""}
-                onChange={(e) => handleField(field.key, e.target.value)}
-              />
-            )}
+            </div>
           </div>
-        ))}
-        {error && (
-          <div className="alert alert-danger py-2 small mb-3">{error}</div>
         )}
 
-        <button
-          className="btn btn-danger rounded-pill px-5 w-100"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              {" "}
-              <span className="spinner-border spinner-border-sm me-2" />
-              Generando planes con  IA...
-            </>
-          ) : (
-            `Generar ${tipos.length > 1 ? "planes" : "plan"}`
-          )}
-        </button>
+        {/* Formulario — se oculta mientras carga */}
+        {!loading && !showModal && (
+          <>
+            <h5 className="text-white mb-1">Tu plan personalizado</h5>
+            <div className="border border-danger border-top my-3"></div>
+            <p className="text-white-50 small mb-4">
+              {tipos
+                .map((tipo) => (tipo === "workout" ? "Ejercicio" : "Dieta"))
+                .join(" + ")}
+            </p>
+
+            {fields.map((field) => (
+              <div className="mb-4" key={field.key}>
+                <label className="form-label text-white-50 small fw-semibold">
+                  {field.label}
+                </label>
+
+                {field.type === "select" && (
+                  <select
+                    className="form-select bg-dark text-white border-secondary"
+                    value={formData[field.key] || ""}
+                    onChange={(e) => handleField(field.key, e.target.value)}
+                  >
+                    <option value="">Selecciona una opcion...</option>
+                    {field.options.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                )}
+
+                {field.type === "checkbox" && (
+                  <div className="d-flex flex-column gap-2 mt-1">
+                    {field.options.map((opt) => (
+                      <div className="form-check" key={opt}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`${field.key}-${opt}`}
+                          checked={(formData[field.key] || []).includes(opt)}
+                          onChange={() => handleCheckbox(field.key, opt)}
+                        />
+                        <label
+                          className="form-check-label text-white-50"
+                          htmlFor={`${field.key}-${opt}`}
+                        >
+                          {opt}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {field.type === "text" && (
+                  <input
+                    className="form-control bg-dark text-white border-secondary"
+                    type="text"
+                    placeholder={field.placeholder}
+                    value={formData[field.key] || ""}
+                    onChange={(e) => handleField(field.key, e.target.value)}
+                  />
+                )}
+              </div>
+            ))}
+
+            {error && (
+              <div className="alert alert-danger py-2 small mb-3">{error}</div>
+            )}
+
+            <button
+              className="btn btn-danger rounded-pill px-5 w-100"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {`Generar ${tipos.length > 1 ? "planes" : "plan"}`}
+            </button>
+          </>
+        )}
+
+        {/* Modal de éxito */}
+        {showModal && (
+          <div
+            className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+            style={{ background: "rgba(0,0,0,0.85)", zIndex: 9999 }}
+          >
+            <div className="bg-dark border border-secondary rounded-4 p-5 text-center mx-3" style={{ maxWidth: 420 }}>
+              <div className="mb-4">
+                <div className="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger mb-3"
+                  style={{ width: 72, height: 72 }}>
+                  <i className="bi bi-check-lg text-white" style={{ fontSize: 36 }}></i>
+                </div>
+                <h4 className="text-white fw-bold mb-2">¡Ya tienes tus planes!</h4>
+                <p className="text-secondary mb-0">
+                  Tu {tipos.length > 1 ? "plan personalizado está listo" : "planes personalizados están listos"} para empezar.
+                </p>
+              </div>
+              <button
+                className="btn btn-danger rounded-pill px-5 py-3 w-100 fw-semibold"
+                onClick={() => navigate("/misplanes")}
+              >
+                Ver {tipos.length > 1 ? "planes" : "plan"}
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export const CheckSub = () => {
 
             // Redirige según el estado de la suscripción
             if (isActive) {
-                navigate("/dashboard"); // ✅ tiene suscripción → va al dashboard
+                navigate("/perfil"); // ✅ tiene suscripción → va al Perfil
             }
             // Si no tiene, se queda en el home normalmente
         });
