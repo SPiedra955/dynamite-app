@@ -24,10 +24,10 @@ const Products = () => {
     const totalPages = Math.ceil(prod.length / productsPerPage);
 
     return (
-        <div className="container py-5">
-            <div className="text-center mb-5">
+        <div className="container py-5 mt-4">
+            <div className="text-center text-white mb-5">
                 <h1 className="fw-bold display-5">Supplements</h1>
-                <p className="text-muted">
+                <p className="text-white">
                     Premium supplements for performance and recovery
                 </p>
             </div>
