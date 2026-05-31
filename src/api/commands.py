@@ -146,7 +146,7 @@ def setup_commands(app):
             plans = [
             SubscriptionPlan(name="Plan Dieta", price=9.99, description="Plan de alimentacion personalizado de 12 semanas"),
             SubscriptionPlan(name="Plan Ejercicio", price=9.99, description="Plan de entrenamiento de 12 semanas"),
-            SubscriptionPlan(name="Plan Completo", price=19.99, description="Plan de dieta y ejercicio personalizado de 12 semanas"),
+            SubscriptionPlan(name="Plan Completo", price=14.99, description="Plan de dieta y ejercicio personalizado de 12 semanas"),
             ]
             db.session.add_all(plans)
             db.session.flush()
