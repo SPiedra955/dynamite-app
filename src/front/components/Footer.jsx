@@ -61,7 +61,7 @@ export const Footer = () => (
         {/* Derechos reservados */}
         <div className="col-12 text-center mt-4 pt-3 border-top border-secondary">
           <p className="text-light small mb-0">
-            Derechos reservados DYNAMITE APP 2026. Final Proyect <a href="http://www.4geeksacademy.com" className="text-white text-decoration-none">4Geeks Academy</a>.
+            Derechos reservados DYNAMITE APP 2026. Final Proyect <a href="http://www.4geeksacademy.com" target="_blank" className="text-white text-decoration-none">4Geeks Academy</a>.
           </p>
         </div>
 
