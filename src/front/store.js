@@ -7,7 +7,6 @@ const normalizedCart = cartFromStorage.map(item => ({
 
 export const initialStore = () => {
   return {
-    /* WE USE LOCALSTORAGE TO SAVE THE TOKEN AND USEFUL STUFF */
     auth: !!localStorage.getItem("token"),
     user: JSON.parse(localStorage.getItem("user")) || null,
     message: null,
@@ -21,20 +20,15 @@ export const initialStore = () => {
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
 
-    case "setProfileImage": {
-      const updatedUser = {
-        ...store.user,
-        profile_image: action.payload
-      };
-
+  case "set_profile_image": {
+    const updatedUser = {
+    ...store.user,
+    photo: action.payload.url,
+    photo_public_id: action.payload.public_id
+    };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      return {
-        ...store,
-        user: updatedUser
-      };
+      return { ...store, user: updatedUser };
     }
-
 
     case 'getSubsPlan':
       return {
@@ -46,7 +40,7 @@ export default function storeReducer(store, action = {}) {
       return {
         ...store,
         sub: action.payload
-      }
+      };
 
     case "clearCart":
       return {
@@ -54,7 +48,6 @@ export default function storeReducer(store, action = {}) {
         cart: []
       };
 
-    /* INCREASE ITEM QUANTITY IN CART */
     case "increaseQuantity":
       return {
         ...store,
@@ -65,7 +58,6 @@ export default function storeReducer(store, action = {}) {
         )
       };
 
-    /* DECREASE ITEM QUANTITY IN CART */
     case "decreaseQuantity":
       return {
         ...store,
@@ -78,26 +70,20 @@ export default function storeReducer(store, action = {}) {
           .filter(item => item.quantity > 0)
       };
 
-    /* DELETE CART ITEM */
     case 'deleteItem': {
       const updatedCart = store.cart.filter(
         item => item.id !== action.payload
       );
-
       localStorage.setItem("cart", JSON.stringify(updatedCart));
-
       return {
         ...store,
         cart: updatedCart
       };
     }
 
-    /* ADD CART ITEM */
     case 'addItem': {
       const exists = store.cart.find(item => item.id === action.payload.id);
-
       let updatedCart;
-
       if (exists) {
         updatedCart = store.cart.map(item =>
           item.id === action.payload.id
@@ -110,16 +96,12 @@ export default function storeReducer(store, action = {}) {
           { ...action.payload, quantity: 1 }
         ];
       }
-
       localStorage.setItem("cart", JSON.stringify(updatedCart));
-
       return {
         ...store,
         cart: updatedCart
       };
     }
-
-    /* GET PRODUCTS */
 
     case 'getProducts':
       return {
@@ -127,12 +109,9 @@ export default function storeReducer(store, action = {}) {
         products: action.payload
       };
 
-    /* LOGIN/REGISTER */
-
     case "logout":
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
       return {
         ...store,
         auth: false,
@@ -141,7 +120,6 @@ export default function storeReducer(store, action = {}) {
 
     case "auth":
       localStorage.setItem("user", JSON.stringify(action.payload.user));
-
       return {
         ...store,
         auth: true,
@@ -154,13 +132,17 @@ export default function storeReducer(store, action = {}) {
         message: action.payload
       };
 
-    case 'add_task':
-
-      const { id, color } = action.payload
-
+    case 'add_task': {
+      const { id, color } = action.payload;
       return {
         ...store,
-        todos: store.todos.map((todo) => (todo.id === id ? { ...todo, background: color } : todo))
+        todos: store.todos.map((todo) =>
+          todo.id === id ? { ...todo, background: color } : todo
+        )
       };
+    }
+
+    default:
+      return store;
   }
 }

@@ -70,7 +70,7 @@ export const Navbar = () => {
 		: "U";
 
 	// Foto de perfil si existe en el store
-	const avatarUrl = store.user?.profile_image || null;
+	const avatarUrl = store.user?.photo || null;
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark position-fixed top-0 start-0 w-100"
