@@ -66,7 +66,7 @@ const Plans = () => {
   return (
     <div className="bg-dark min-vh-100 py-5">
       <div className="container">
-        <div className="text-center mb-5">
+        <div className="text-center my-5">
           <h2 className="text-white">Elige tu plan</h2>
           <div className="border border-danger border-top my-3 mx-auto w-25"></div>
           <p className="text-white-50">Genera tu plan de dieta y ejercicio personalizado con IA</p>

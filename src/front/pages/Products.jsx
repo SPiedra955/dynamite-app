@@ -25,10 +25,10 @@ const Products = () => {
 
     return (
         <div className="container py-5 mt-4">
-            <div className="text-center text-white mb-5">
-                <h1 className="fw-bold display-5">Supplements</h1>
+            <div className="text-center text-white my-5">
+                <h1 className="fw-bold display-5">Suplementos</h1>
                 <p className="text-white">
-                    Premium supplements for performance and recovery
+                    Suplementos Premium para el rendimiento y la recuperación
                 </p>
             </div>
 

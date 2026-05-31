@@ -23,7 +23,7 @@ export const Footer = () => (
             <Link to="/products" className="text-white text-decoration-none">Tienda</Link>
           </p>
           <p className="text-light mb-2">
-            <Link to="/planes-de-suscripcion" className="text-white text-decoration-none">Planes</Link>
+            <Link to="/planes_de_suscripcion" className="text-white text-decoration-none">Planes</Link>
           </p>
           <p className="text-light mb-2">
             <a href="#" className="text-white text-decoration-none">Nosotros</a>
