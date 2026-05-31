@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Plans = () => {
   const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ const Plans = () => {
   };
 
   const handlePlan = (plan) => {
-    if (!store.auth) {
+    if (!token) {
       navigate("/authentication");
       return;
     }
@@ -94,7 +96,7 @@ const Plans = () => {
           ))}
         </div>
 
-        {!store.auth && (
+        {!token && (
           <p className="text-center text-white-50 small mt-4">
             * Necesitas iniciar sesión para elegir un plan
           </p>

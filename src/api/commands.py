@@ -141,17 +141,15 @@ def setup_commands(app):
         db.session.add_all(products)
         db.session.flush()
 
-        plans = []
-        for i in range(10):
-            plans.append(
-                SubscriptionPlan(
-                    name=f"Plan {i + 1}",
-                    price=Decimal(f"{9 + i}.99"),
-                    description=f"Plan con beneficios nivel {i + 1}",
-                )
-            )
-        db.session.add_all(plans)
-        db.session.flush()
+        if SubscriptionPlan.query.count() == 0:
+               
+            plans = [
+            SubscriptionPlan(name="Plan Dieta", price=9.99, description="Plan de alimentacion personalizado de 12 semanas"),
+            SubscriptionPlan(name="Plan Ejercicio", price=9.99, description="Plan de entrenamiento de 12 semanas"),
+            SubscriptionPlan(name="Plan Completo", price=14.99, description="Plan de dieta y ejercicio personalizado de 12 semanas"),
+            ]
+            db.session.add_all(plans)
+            db.session.flush()
 
         carts = [Cart(user_id=user.id) for user in users]
         db.session.add_all(carts)
@@ -202,7 +200,7 @@ def setup_commands(app):
         db.session.flush()
 
         subscriptions = []
-        for i in range(10):
+        for i in range(2):
             active = i % 3 != 0
             subscriptions.append(
                 Subscription(
@@ -216,7 +214,7 @@ def setup_commands(app):
         db.session.flush()
 
         myplans = []
-        for i in range(10):
+        for i in range(2):
             tipo = DietExerciseType.diet if i % 2 == 0 else DietExerciseType.workout
             myplans.append(
                 MyPlan(
@@ -235,7 +233,7 @@ def setup_commands(app):
 
         payments = []
         methods = ["card", "paypal", "transfer"]
-        for i in range(10):
+        for i in range(2):
             if i < 5:
                 order = orders[i]
                 payments.append(

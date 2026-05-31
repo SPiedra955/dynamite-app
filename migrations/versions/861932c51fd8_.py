@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: e4821887d88f
+Revision ID: 861932c51fd8
 Revises: 
-Create Date: 2026-05-23 12:13:14.568859
+Create Date: 2026-05-29 17:52:14.210799
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e4821887d88f'
+revision = '861932c51fd8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,9 +30,9 @@ def upgrade():
     )
     op.create_table('subscription_plans',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
-    sa.Column('description', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -83,10 +83,13 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('plan_id', sa.Integer(), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
+    sa.Column('stripe_subscription_id', sa.String(length=255), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('cancel_day', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['plan_id'], ['subscription_plans.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('stripe_subscription_id')
     )
     op.create_table('cart_items',
     sa.Column('id', sa.Integer(), nullable=False),

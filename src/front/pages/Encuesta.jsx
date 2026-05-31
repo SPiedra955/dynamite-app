@@ -8,18 +8,21 @@ const workout_fields = [
     key: "days_per_week",
     label: "Dias por semana",
     type: "select",
+    required:true,
     options: ["1", "2", "3", "4", "5", "6"],
   },
   {
     key: "session_duration",
     label: "Duracion por sesion(min)",
     type: "select",
+    required:true,
     options: ["30", "45", "60", "75", "90"],
   },
   {
     key: "equipment",
     label: "Equipamiento",
     type: "checkbox",
+    required:true,
     options: [
       "Sin equipamiento",
       "Bandas elasticas",
@@ -31,12 +34,14 @@ const workout_fields = [
     key: "fitness_level",
     label: "Nivel actual",
     type: "select",
+    required:true,
     options: ["Principiante", "Intermedio", "Avanzado"],
   },
   {
     key: "time_without_training",
     label: "Tiempo sin entrenar",
     type: "select",
+    required:true,
     options: [
       "Nunca he entrenado",
       "Menos de un 1 mes",
@@ -49,12 +54,14 @@ const workout_fields = [
     key: "injures",
     label: "Lesiones o limitaciones",
     type: "text",
+    required:false,
     placeholder: "EJ:rodilla derecha",
   },
   {
     key: "workout_goal",
     label: "Objetivo en 12 semanas",
     type: "select",
+    required:true,
     options: [
       "Bajar de peso",
       "Aumentar masa muscular",
@@ -70,6 +77,7 @@ const diet_fields = [
     key: "activity_level",
     label: "Nivel de actividad fisica",
     type: "select",
+    required:true,
     options: [
       "Sedentario",
       "Ligero (1-3 dias/semana)",
@@ -82,18 +90,21 @@ const diet_fields = [
     key: "meals_per_day",
     label: "Numero de comidas",
     type: "select",
+    required:true, 
     options: ["2", "3", "4", "5"],
   },
   {
     key: "budget",
     label: "Presupuesto",
     type: "select",
+    required:true,
     options: ["Ajustando", "Estandar", "Sin limite"],
   },
   {
     key: "diet_type",
     label: "Tipo de dieta",
     type: "select",
+    required:true,
     options: [
       "Omnivora",
       "Vegetariana",
@@ -106,6 +117,7 @@ const diet_fields = [
   {
     key: "allergies",
     label: "Alergias o intolerencias",
+    required:false,
     type: "text",
     placeholder: "Ej:lactosa, gluten... o ninguna",
   },
@@ -113,12 +125,14 @@ const diet_fields = [
     key: "disliked_foods",
     label: "Alimentos que no te gustan",
     type: "text",
+    required:false,
     placeholder: "Ej:brocoli, higado..... o ninguno",
   },
   {
     key: "diet_goal",
     label: "Objetivo en 12 semanas",
     type: "select",
+    required:true,
     options: [
       "Perder  peso",
       "Ganar masa muscular",
@@ -175,6 +189,12 @@ const Encuesta = () => {
     return () => clearInterval(countdownRef.current);
   }, [loading]);
 
+  useEffect(()=>{
+    if (!error) return;
+    const timer = setTimeout(()=> setError(null),3000)
+    return () => clearTimeout(timer);
+  },[error]);
+
   const handleField = (key, value) =>
     setFormData((prev) => ({ ...prev, [key]: value }));
 
@@ -189,6 +209,28 @@ const Encuesta = () => {
   };
 
   const handleSubmit = async () => {
+    
+    const requiredWorkout = ["days_per_week","session_duration", "equipment","fitness_level","time_without_training","workout_goal"];
+
+    const requiredDiet = ["activity_level", "meals_per_day", "budget", "diet_type","diet_goal"];
+
+    const obligatorios =[];
+
+    if (tipos.includes("workout")) obligatorios.push(...requiredWorkout);
+    if (tipos.includes("diet")) obligatorios.push(...requiredDiet);
+
+    const vacios = obligatorios.filter(key=>{
+      const val = formData[key];
+      if (Array.isArray(val)) return val.length ===0;
+      return !val || val.trim() === "";
+    });
+
+    if (vacios.length > 0){
+      setError(" Porfavor rellana todos los campos obligatorios.")
+      return;
+    }
+    
+    
     setLoading(true);
     setError(null);
 
@@ -306,6 +348,7 @@ const Encuesta = () => {
               <div className="mb-4" key={field.key}>
                 <label className="form-label text-white-50 small fw-semibold">
                   {field.label}
+                  {field.required && <span className="text-danger ms-1">*</span>}
                 </label>
 
                 {field.type === "select" && (
