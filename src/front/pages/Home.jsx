@@ -19,7 +19,8 @@ export const Home = () => {
       if (response.ok) dispatch({ type: "set_hello", payload: data.message });
       return data;
     } catch (error) {
-      if (error.message) throw new Error(`Could not fetch the message from the backend.`);
+      console.error(error);
+      throw new Error("Could not fetch the message from the backend.");
     }
   };
 

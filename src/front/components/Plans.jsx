@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,23 +9,41 @@ const Plans = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/subscription-plans`);
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/subscription-plans`;
+
+        console.log("Fetching:", url);
+
+        const resp = await fetch(url);
+
+        console.log("Status:", resp.status);
+
+        if (!resp.ok) {
+          throw new Error(`HTTP ${resp.status}`);
+        }
+
         const data = await resp.json();
-        if (data.success) setPlans(data.data);
-        else setError("No se pudieron cargar los planes");
-      } catch {
-        setError("Error al conectar con el server");
+
+        console.log("Data:", data);
+
+        if (data.success) {
+          setPlans(data.data);
+        } else {
+          setError("No se pudieron cargar los planes");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Error al conectar con el servidor");
       } finally {
         setLoading(false);
       }
     };
+
     fetchPlans();
   }, []);
-
   const getType = (plan) => {
     const nombre = plan.name.toLowerCase();
     if (nombre.includes("dieta")) return ["diet"];
@@ -41,7 +58,7 @@ const Plans = () => {
     }
     navigate("/encuesta", { state: { plan_id: plan.id, tipos: getType(plan) } });
   };
-  
+
   if (loading) {
     return (
       <div className="bg-dark min-vh-100 d-flex align-items-center justify-content-center">
@@ -81,7 +98,12 @@ const Plans = () => {
                   <span className="text-white-50 small"> / mes</span>
                 </div>
                 {plan.description && (
-                  <p className="text-white-50 small mb-4">{plan.description}</p>
+                  <div
+                    className="text-white-50 small mb-4"
+                    dangerouslySetInnerHTML={{
+                      __html: plan.description,
+                    }}
+                  />
                 )}
                 <button
                   className="btn btn-danger rounded-pill px-5 mt-auto w-100"

@@ -1,3 +1,4 @@
+from api.api_routes.upload import upload_api
 import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
@@ -14,9 +15,9 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 
-app = Flask(__name__)  
+app = Flask(__name__)
 app.url_map.strict_slashes = False
-CORS(app)  
+CORS(app)
 
 
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
@@ -42,18 +43,20 @@ setup_commands(app)
 # Blueprints
 app.register_blueprint(api, url_prefix='/api')
 
-from api.api_routes.upload import upload_api
 app.register_blueprint(upload_api, url_prefix='/api')
+
 
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
+
 
 @app.route('/')
 def sitemap():
     if ENV == "development":
         return generate_sitemap(app)
     return send_from_directory(static_file_dir, 'index.html')
+
 
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
@@ -62,6 +65,7 @@ def serve_any_other_file(path):
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0
     return response
+
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
