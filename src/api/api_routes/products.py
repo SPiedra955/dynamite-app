@@ -1,10 +1,26 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify  # type: ignore
 from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
-from sqlalchemy import select
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from sqlalchemy import select  # type: ignore
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required  # type: ignore
 from api.blueprint import api
+import pandas as pd
 
 
+
+@api.route("/seed-products", methods=["POST"])
+def seed_products():
+
+
+    from api.api_routes.seedProducts import seed_products_from_csv
+
+    count = seed_products_from_csv(
+        "src/front/datasets/bodybuilding_nutrition_products.csv"
+    )
+
+    return jsonify({
+        "success": True,
+        "msg": f"{count} products inserted"
+    }), 200
 # ADD A NEW PRODUCT TO THE BBDD
 
 
@@ -37,12 +53,12 @@ def new_product():
 
 
 @api.route("/product/<int:id>", methods=["GET"])
-#@jwt_required()
+# @jwt_required()
 def get_product(id):
-    #user_id = get_jwt_identity()
-    #user = db.session.get(User, user_id)
-    
-    #if user.role != "admin":
+    # user_id = get_jwt_identity()
+    # user = db.session.get(User, user_id)
+
+    # if user.role != "admin":
     #   return jsonify({"success": False, "msg": "forbidden"}), 403
 
     product = db.session.get(Product, id)

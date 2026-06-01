@@ -11,9 +11,14 @@ import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
-import Tienda from "./pages/Tienda";
-import Planes_de_suscripcion from "./pages/Planes_de_suscripcion";
+import Products from "./pages/Products"
+import Success from "./pages/Success";
+import PaymentError from "./pages/PaymentError";
+// import { Subscription_plans } from "./pages/Subscription_plans";
 import Encuesta from "./pages/Encuesta";
+import Perfil from "./pages/Perfil";
+import Misplanes from "./pages/Misplanes";
+import Plans from "./components/Plans"
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,10 +37,13 @@ export const router = createBrowserRouter(
       <Route path="/demo" element={<Demo />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/authentication" element={<Auth />} />
-      <Route path="/planes_de_suscripcion" element={<Planes_de_suscripcion />} />
-      <Route path="/tienda" element={<Tienda />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/successful-payment" element={<Success />} />
+      <Route path="/payment-error" element={<PaymentError />} />
+      <Route path="/subscription-plans" element={<Plans />} />
       <Route path="/encuesta" element={<Encuesta />} />
-
+      <Route path="/profile" element={<Perfil />} />
+      <Route path="/my-plans" element={<Misplanes />} />
     </Route>
   )
 );

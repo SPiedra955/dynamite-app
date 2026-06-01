@@ -1,18 +1,19 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify  # type: ignore
 from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from sqlalchemy import select
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from sqlalchemy import select  # type: ignore
+from werkzeug.security import generate_password_hash, check_password_hash  # type: ignore
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required  # type: ignore
 from api.blueprint import api
 from api.api_routes.products import *
+from api.api_routes.payment import *
 from api.api_routes.carts import *
-
-
+from api.api_routes.subscription import *
+from api.api_routes.subscriptionPlans import *
 # Allow CORS requests to this API
 CORS(api)
 
@@ -52,6 +53,25 @@ def seed_admin():
     db.session.commit()
     print("Admin created")
     return jsonify({"msg": "Admin created"}), 201
+
+# SEED PLANS 
+@api.route('/seed-plans',methods =['GET']) 
+def seed_plans():
+    if SubscriptionPlan.query.count() > 0:
+        return jsonify({"msg":"Plans already exist"}),200
+    plans = [
+        SubscriptionPlan(name="Plan Dieta", price=9.99, description="Plan de alimentacion personalizado de 12 semanas"),
+        SubscriptionPlan(name="Plan Ejercicio", price=9.99, description="Plan de entrenamiento de 12 semanas"),
+        SubscriptionPlan(name="Plan Completo", price=19.99, description="Plan de dieta y ejercicio personalizado de 12 semanas"),
+    ]
+    db.session.add_all (plans)
+    db.session.commit()
+    return jsonify({"msg":"Plans created"}), 201
+
+
+
+
+
 
 # LOGIN/REGISTER
 
@@ -113,11 +133,8 @@ def auth():
             }), 200
 
         return jsonify({'success': False, 'data': 'invalid type'}), 400
-
     except Exception as e:
         print("ERROR BACKEND:", e)
         return jsonify({
             "success": False,
-            "data": "internal server error"
-        }), 500
-
+            "data": "internal server error"}), 500
