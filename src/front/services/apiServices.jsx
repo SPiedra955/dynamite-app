@@ -67,7 +67,7 @@ services.getProducts = async () => {
             throw new Error("Something went wrong");
         }
 
-        const data = await resp.json();
+        // const data = await resp.json();
 
         return data.results || data;
 
@@ -90,7 +90,7 @@ services.isActive = async () => {
         });
 
         const data = await resp.json();
-        console.log("isActive response:", data);
+        // console.log("isActive response:", data);
         localStorage.setItem("subIsActive", JSON.stringify(data))
         if (!resp.ok) {
             throw new Error(data.msg || "subscription error");
@@ -117,7 +117,7 @@ services.getSubscriptions = async () => {
         }
 
         const data = await resp.json();
-        console.log(data)
+        // console.log(data)
 
         return data.results || data;
 

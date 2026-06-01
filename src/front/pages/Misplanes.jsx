@@ -77,7 +77,7 @@ const Misplanes = () => {
                         <span className="text-danger fw-semibold">•</span> {ejercicio.name} — {ejercicio.sets} series x {ejercicio.reps} · {ejercicio.rest_seconds}s descanso
                       </p>
                       {ejercicio.notes && (
-                        <p className="text-secondary mb-0" style={{fontSize: "0.75rem"}}>{ejercicio.notes}</p>
+                        <p className="text-secondary mb-0" style={{ fontSize: "0.75rem" }}>{ejercicio.notes}</p>
                       )}
                     </div>
                   ))}
@@ -184,7 +184,7 @@ const Misplanes = () => {
               </div>
               <button
                 className="btn btn-danger rounded-pill px-4"
-                onClick={() => navigate("/planes_de_suscripcion")}
+                onClick={() => navigate("/subscription-plans")}
               >
                 + Nuevo plan
               </button>
@@ -250,7 +250,7 @@ const Misplanes = () => {
             {plans.length > 0 && (
               <button
                 className="btn btn-outline-secondary mt-4 d-flex align-items-center gap-2"
-                onClick={() => navigate("/perfil")}
+                onClick={() => navigate("/profile")}
               >
                 ← Volver al perfil
               </button>

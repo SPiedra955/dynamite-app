@@ -1,14 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { ProfileImageUploader } from "../components/ProfileImageUploader";
 
 const API = import.meta.env.VITE_BACKEND_URL;
-
+const token = localStorage.getItem("token");
 const Perfil = () => {
   const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     name: store.user?.name || "",
     email: store.user?.email || "",
@@ -21,6 +20,14 @@ const Perfil = () => {
 
   const [error, setSaveError] = useState(null);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token || !store.user) {
+      navigate("/");
+    }
+  }, [store.user, navigate]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -28,11 +35,8 @@ const Perfil = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaveError(null);
-
     try {
-      const token = localStorage.getItem("token");
       const userId = store.user?.id;
-
       const payload = {
         name: formData.name,
         email: formData.email,
@@ -85,7 +89,7 @@ const Perfil = () => {
           className="p-4 bg-dark bg-opacity-75 rounded-bottom-4"
         >
           {/* Sección personal */}
-          <p className="text-danger text-uppercase fw-semibold mb-3" style={{fontSize: "0.7rem", letterSpacing: "0.12em"}}>
+          <p className="text-danger text-uppercase fw-semibold mb-3" style={{ fontSize: "0.7rem", letterSpacing: "0.12em" }}>
             Información personal
           </p>
 
@@ -148,7 +152,7 @@ const Perfil = () => {
           <hr className="border-secondary" />
 
           {/* Sección seguridad */}
-          <p className="text-danger text-uppercase fw-semibold mb-3" style={{fontSize: "0.7rem", letterSpacing: "0.12em"}}>
+          <p className="text-danger text-uppercase fw-semibold mb-3" style={{ fontSize: "0.7rem", letterSpacing: "0.12em" }}>
             Seguridad
           </p>
 
@@ -172,7 +176,7 @@ const Perfil = () => {
             <button
               type="button"
               className="btn btn-danger w-100 py-3 d-flex align-items-center justify-content-center gap-2"
-              onClick={() => navigate("/misplanes")}
+              onClick={() => navigate("/my-plans")}
             >
               <i className="ti ti-chart-bar"></i>
               Mis planes

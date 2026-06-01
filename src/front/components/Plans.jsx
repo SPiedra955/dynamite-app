@@ -33,7 +33,7 @@ const Plans = () => {
   const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
+  const url = import.meta.env.VITE_BACKEND_URL;
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,11 +43,11 @@ const Plans = () => {
       try {
         const url = `${import.meta.env.VITE_BACKEND_URL}/api/subscription-plans`;
 
-        console.log("Fetching:", url);
+        // console.log("Fetching:", url);
 
         const resp = await fetch(url);
 
-        console.log("Status:", resp.status);
+        // console.log("Status:", resp.status);
 
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status}`);
@@ -55,7 +55,7 @@ const Plans = () => {
 
         const data = await resp.json();
 
-        console.log("Data:", data);
+        // console.log("Data:", data);
 
         if (data.success) {
           setPlans(data.data);
@@ -149,7 +149,34 @@ const Plans = () => {
 
                 <button
                   className="btn btn-danger rounded-pill px-5 mt-auto w-100"
-                  onClick={() => handlePlan(plan)}
+                  onClick={async () => {
+                    if (!token) {
+                      navigate("/authentication");
+                      return;
+                    }
+
+                    try {
+                      const res = await fetch(`${url}/api/create-subscription-checkout`, {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          email: store.user.email,
+                          id: plan.id,
+                        }),
+                      });
+
+                      const data = await res.json();
+
+                      if (data.url) {
+                        window.location.href = data.url;
+                      }
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
                 >
                   Elegir plan
                 </button>

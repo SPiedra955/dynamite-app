@@ -64,7 +64,7 @@ def create_subscription_checkout():
                     "quantity": 1,
                 }
             ],
-            success_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/successful-payment",
+            success_url=f"https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/successful-payment?planId={plan.id}&session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/payment-error",
             metadata={"plan_id": str(plan.id), "user_id": str(user_id)},
         )
@@ -200,8 +200,8 @@ def stripe_webhook():
 
         return jsonify({"error": str(e)}), 400
 
-    print("WEBHOOK HIT")
-    print(event["type"])
+    # print("WEBHOOK HIT")
+    # print(event["type"])
 
     if event["type"] != "checkout.session.completed":
         return jsonify({"status": "ignored"}), 200
@@ -294,3 +294,18 @@ def stripe_webhook():
     db.session.commit()
 
     return jsonify({"status": "payment success"}), 200
+
+@api.route("/my-subscription", methods=["GET"])
+@jwt_required()
+def get_my_subscription():
+    user_id = get_jwt_identity()
+
+    sub = Subscription.query.filter_by(user_id=user_id, active=True).first()
+
+    if not sub:
+        return jsonify({"active": False}), 404
+
+    return jsonify({
+        "active": True,
+        "planId": sub.plan_id
+    }), 200

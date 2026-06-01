@@ -15,7 +15,6 @@ import Products from "./pages/Products"
 import Success from "./pages/Success";
 import PaymentError from "./pages/PaymentError";
 // import { Subscription_plans } from "./pages/Subscription_plans";
-import Tienda from "./pages/Tienda";
 import Encuesta from "./pages/Encuesta";
 import Perfil from "./pages/Perfil";
 import Misplanes from "./pages/Misplanes";
@@ -41,11 +40,10 @@ export const router = createBrowserRouter(
       <Route path="/products" element={<Products />} />
       <Route path="/successful-payment" element={<Success />} />
       <Route path="/payment-error" element={<PaymentError />} />
-      <Route path="/planes_de_suscripcion" element={<Plans />} />
-      <Route path="/tienda" element={<Tienda />} />
+      <Route path="/subscription-plans" element={<Plans />} />
       <Route path="/encuesta" element={<Encuesta />} />
-      <Route path="/perfil" element={<Perfil />} />
-      <Route path="/misplanes" element={<Misplanes />} />
+      <Route path="/profile" element={<Perfil />} />
+      <Route path="/my-plans" element={<Misplanes />} />
     </Route>
   )
 );

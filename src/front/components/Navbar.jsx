@@ -204,7 +204,7 @@ export const Navbar = () => {
 									</li>
 									<li><hr className="dropdown-divider" /></li>
 									<li>
-										<Link to="/perfil" className="dropdown-item">
+										<Link to="/profile" className="dropdown-item">
 											<i className="bi bi-person me-2"></i>
 											Mi perfil
 										</Link>

@@ -1,28 +1,28 @@
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 const workout_fields = [
   {
     key: "days_per_week",
     label: "Dias por semana",
     type: "select",
-    required:true,
+    required: true,
     options: ["1", "2", "3", "4", "5", "6"],
   },
   {
     key: "session_duration",
     label: "Duracion por sesion(min)",
     type: "select",
-    required:true,
+    required: true,
     options: ["30", "45", "60", "75", "90"],
   },
   {
     key: "equipment",
     label: "Equipamiento",
     type: "checkbox",
-    required:true,
+    required: true,
     options: [
       "Sin equipamiento",
       "Bandas elasticas",
@@ -34,14 +34,14 @@ const workout_fields = [
     key: "fitness_level",
     label: "Nivel actual",
     type: "select",
-    required:true,
+    required: true,
     options: ["Principiante", "Intermedio", "Avanzado"],
   },
   {
     key: "time_without_training",
     label: "Tiempo sin entrenar",
     type: "select",
-    required:true,
+    required: true,
     options: [
       "Nunca he entrenado",
       "Menos de un 1 mes",
@@ -54,14 +54,14 @@ const workout_fields = [
     key: "injures",
     label: "Lesiones o limitaciones",
     type: "text",
-    required:false,
+    required: false,
     placeholder: "EJ:rodilla derecha",
   },
   {
     key: "workout_goal",
     label: "Objetivo en 12 semanas",
     type: "select",
-    required:true,
+    required: true,
     options: [
       "Bajar de peso",
       "Aumentar masa muscular",
@@ -77,7 +77,7 @@ const diet_fields = [
     key: "activity_level",
     label: "Nivel de actividad fisica",
     type: "select",
-    required:true,
+    required: true,
     options: [
       "Sedentario",
       "Ligero (1-3 dias/semana)",
@@ -90,21 +90,21 @@ const diet_fields = [
     key: "meals_per_day",
     label: "Numero de comidas",
     type: "select",
-    required:true, 
+    required: true,
     options: ["2", "3", "4", "5"],
   },
   {
     key: "budget",
     label: "Presupuesto",
     type: "select",
-    required:true,
+    required: true,
     options: ["Ajustando", "Estandar", "Sin limite"],
   },
   {
     key: "diet_type",
     label: "Tipo de dieta",
     type: "select",
-    required:true,
+    required: true,
     options: [
       "Omnivora",
       "Vegetariana",
@@ -117,7 +117,7 @@ const diet_fields = [
   {
     key: "allergies",
     label: "Alergias o intolerencias",
-    required:false,
+    required: false,
     type: "text",
     placeholder: "Ej:lactosa, gluten... o ninguna",
   },
@@ -125,14 +125,14 @@ const diet_fields = [
     key: "disliked_foods",
     label: "Alimentos que no te gustan",
     type: "text",
-    required:false,
+    required: false,
     placeholder: "Ej:brocoli, higado..... o ninguno",
   },
   {
     key: "diet_goal",
     label: "Objetivo en 12 semanas",
     type: "select",
-    required:true,
+    required: true,
     options: [
       "Perder  peso",
       "Ganar masa muscular",
@@ -154,8 +154,8 @@ const Encuesta = () => {
   const { store } = useGlobalReducer();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const planId = location.state?.plan_id;
+  const [searchParams] = useSearchParams();
+  const planId = Number(searchParams.get("planId"));
   const tipos = location.state?.tipos ?? [];
   const fields = buildFields(tipos);
 
@@ -167,9 +167,17 @@ const Encuesta = () => {
   const countdownRef = useRef(null);
 
   useEffect(() => {
-    if (!planId) navigate("/planes_de_suscripcion");
-  }, []);
+    const id = searchParams.get("planId");
 
+    if (!id || isNaN(Number(id))) {
+      navigate("/subscription-plans");
+    }
+  }, [searchParams]);
+  useEffect(() => {
+    if (!tipos.length) {
+      console.warn("No hay tipos de plan");
+    }
+  }, [tipos]);
   // Inicia o detiene el countdown según el estado de loading
   useEffect(() => {
     if (loading) {
@@ -189,11 +197,11 @@ const Encuesta = () => {
     return () => clearInterval(countdownRef.current);
   }, [loading]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!error) return;
-    const timer = setTimeout(()=> setError(null),3000)
+    const timer = setTimeout(() => setError(null), 3000)
     return () => clearTimeout(timer);
-  },[error]);
+  }, [error]);
 
   const handleField = (key, value) =>
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -209,28 +217,28 @@ const Encuesta = () => {
   };
 
   const handleSubmit = async () => {
-    
-    const requiredWorkout = ["days_per_week","session_duration", "equipment","fitness_level","time_without_training","workout_goal"];
 
-    const requiredDiet = ["activity_level", "meals_per_day", "budget", "diet_type","diet_goal"];
+    const requiredWorkout = ["days_per_week", "session_duration", "equipment", "fitness_level", "time_without_training", "workout_goal"];
 
-    const obligatorios =[];
+    const requiredDiet = ["activity_level", "meals_per_day", "budget", "diet_type", "diet_goal"];
+
+    const obligatorios = [];
 
     if (tipos.includes("workout")) obligatorios.push(...requiredWorkout);
     if (tipos.includes("diet")) obligatorios.push(...requiredDiet);
 
-    const vacios = obligatorios.filter(key=>{
+    const vacios = obligatorios.filter(key => {
       const val = formData[key];
-      if (Array.isArray(val)) return val.length ===0;
+      if (Array.isArray(val)) return val.length === 0;
       return !val || val.trim() === "";
     });
 
-    if (vacios.length > 0){
+    if (vacios.length > 0) {
       setError(" Porfavor rellana todos los campos obligatorios.")
       return;
     }
-    
-    
+
+
     setLoading(true);
     setError(null);
 
@@ -431,7 +439,7 @@ const Encuesta = () => {
               </div>
               <button
                 className="btn btn-danger rounded-pill px-5 py-3 w-100 fw-semibold"
-                onClick={() => navigate("/misplanes")}
+                onClick={() => navigate("/subscription-plans")}
               >
                 Ver {tipos.length > 1 ? "planes" : "plan"}
               </button>
