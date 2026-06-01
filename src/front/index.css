@@ -1,0 +1,86 @@
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #222222;
+}
+
+.product-card {
+    background: white;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.product-image-wrapper {
+    background: #f8f9fa;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.product-image {
+    max-height: 220px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-title {
+    min-height: 48px;
+    font-size: 1.1rem;
+}
+
+.product-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 60px;
+}
+
+.product-price {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #111;
+}
+
+.btn-dark {
+    border-radius: 12px;
+    padding: 10px;
+    font-weight: 600;
+}
+
+.btn-outline-danger {
+    border-radius: 12px;
+    padding: 10px;
+    font-weight: 600;
+}
+
+.slide-bg {
+    background-image: url('https://res.cloudinary.com/dr5mzsq8w/image/upload/v1779817647/mujer-top-negro-esta-haciendo-flexiones-cinta-rodante_188544-21502_slnrvg.avif');
+    background-size: cover;
+    background-position: center;
+    min-height: 500px;
+}
+
+.slide-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    min-height: 500px;
+}
+
+.card-sales {
+        min-height: 400px;
+}

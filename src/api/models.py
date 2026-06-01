@@ -1,85 +1,73 @@
 from datetime import datetime
 from decimal import Decimal
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import (String,Boolean,ForeignKey,DateTime,Numeric)
-from sqlalchemy.orm import (Mapped,mapped_column,relationship)
+from flask_sqlalchemy import SQLAlchemy  # type: ignore
+from sqlalchemy import String, Boolean, ForeignKey, DateTime, Numeric, Text, Enum  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
+import enum
 
 db = SQLAlchemy()
 
 
+# ENUMS
+
+
+class DietExerciseType(enum.Enum):
+    diet = "diet"
+    workout = "workout"
+
+
+class PaymentStatus(enum.Enum):
+    pending = "pending"
+    cancelled = "cancelled"
+    paid = "paid"
+    refunded = "refunded"
+
+
 # USERS
+
 
 class User(db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    name: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False
-    )
+    name: Mapped[str] = mapped_column(String(50), nullable=False)
 
     email: Mapped[str] = mapped_column(
-        String(120),
-        unique=True,
-        nullable=False
-    )
+        String(120), unique=True, nullable=False)
 
-    password: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False
-    )
-
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    # podriamos pasarlo a enum
     role: Mapped[str] = mapped_column(
-        String(20),
-        nullable=False
-    )
+        String(20), default="user", nullable=False)
 
-    age: Mapped[int] = mapped_column(nullable=False)
+    age: Mapped[int] = mapped_column(nullable=True)
 
-    weight: Mapped[float] = mapped_column(nullable=False)
+    weight: Mapped[float] = mapped_column(nullable=True)
 
-    height: Mapped[float] = mapped_column(nullable=False)
+    height: Mapped[float] = mapped_column(nullable=True)
 
-    objective: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False
-    )
+    objective: Mapped[str] = mapped_column(String(50), nullable=True)
 
-    photo: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True
-    )
+    photo: Mapped[str] = mapped_column(String(255), nullable=True)
 
     is_active: Mapped[bool] = mapped_column(
-        Boolean,
-        default=True,
-        nullable=False
-    )
+        Boolean, default=True, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
+        DateTime, default=datetime.utcnow, nullable=False
     )
 
     # Relationships
     orders = relationship("Order", back_populates="user")
 
-    subscriptions = relationship(
-        "Subscription",
-        back_populates="user"
-    )
+    subscriptions = relationship("Subscription", back_populates="user")
 
-    payments = relationship(
-        "Payment",
-        back_populates="user"
-    )
+    myplans = relationship("MyPlan", back_populates="user")
 
-    carts = relationship(
-        "Cart",
-        back_populates="user"
-    )
+    payments = relationship("Payment", back_populates="user")
+
+    carts = relationship("Cart", back_populates="user")
 
     def serialize(self):
         return {
@@ -93,54 +81,34 @@ class User(db.Model):
             "objective": self.objective,
             "photo": self.photo,
             "is_active": self.is_active,
-            "created_at": self.created_at
+            "created_at": self.created_at.isoformat(),
         }
 
 
 # PRODUCTS
+
 
 class Product(db.Model):
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    name: Mapped[str] = mapped_column(
-        String(100),
-        nullable=False
-    )
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    description: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True
-    )
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
 
-    price: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable=False
-    )
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
     stock: Mapped[int] = mapped_column(nullable=False)
 
-    category: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False
-    )
+    category: Mapped[str] = mapped_column(String(50), nullable=False)
 
-    image: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True
-    )
+    image: Mapped[str] = mapped_column(String(255), nullable=True)
 
     # Relationships
-    order_items = relationship(
-        "OrderItem",
-        back_populates="product"
-    )
+    order_items = relationship("OrderItem", back_populates="product")
 
-    cart_items = relationship(
-        "CartItem",
-        back_populates="product"
-    )
+    cart_items = relationship("CartItem", back_populates="product")
 
     def serialize(self):
         return {
@@ -150,11 +118,12 @@ class Product(db.Model):
             "price": float(self.price),
             "stock": self.stock,
             "category": self.category,
-            "image": self.image
+            "image": self.image,
         }
 
 
 # ORDERS
+
 
 class Order(db.Model):
     __tablename__ = "orders"
@@ -162,41 +131,25 @@ class Order(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"),
-        nullable=False
-    )
+        ForeignKey("users.id"), nullable=False)
 
     total_price: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable=False
-    )
+        Numeric(10, 2), nullable=False)
 
-    status: Mapped[str] = mapped_column(
-        String(20),
-        nullable=False
-    )
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+
+    stripe_session_id: Mapped[str] = mapped_column(String(255), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
+        DateTime, default=datetime.utcnow, nullable=False
     )
 
     # Relationships
-    user = relationship(
-        "User",
-        back_populates="orders"
-    )
+    user = relationship("User", back_populates="orders")
 
-    payments = relationship(
-        "Payment",
-        back_populates="order"
-    )
+    payments = relationship("Payment", back_populates="order")
 
-    order_items = relationship(
-        "OrderItem",
-        back_populates="order"
-    )
+    order_items = relationship("OrderItem", back_populates="order")
 
     def serialize(self):
         return {
@@ -204,11 +157,12 @@ class Order(db.Model):
             "user_id": self.user_id,
             "total_price": float(self.total_price),
             "status": self.status,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }
 
 
 # ORDER ITEMS
+
 
 class OrderItem(db.Model):
     __tablename__ = "order_items"
@@ -216,32 +170,19 @@ class OrderItem(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     order_id: Mapped[int] = mapped_column(
-        ForeignKey("orders.id"),
-        nullable=False
-    )
+        ForeignKey("orders.id"), nullable=False)
 
     product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id"),
-        nullable=False
-    )
+        ForeignKey("products.id"), nullable=False)
 
     quantity: Mapped[int] = mapped_column(nullable=False)
 
-    price: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable=False
-    )
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
     # Relationships
-    order = relationship(
-        "Order",
-        back_populates="order_items"
-    )
+    order = relationship("Order", back_populates="order_items")
 
-    product = relationship(
-        "Product",
-        back_populates="order_items"
-    )
+    product = relationship("Product", back_populates="order_items")
 
     def serialize(self):
         return {
@@ -249,48 +190,39 @@ class OrderItem(db.Model):
             "order_id": self.order_id,
             "product_id": self.product_id,
             "quantity": self.quantity,
-            "price": float(self.price)
+            "price": float(self.price),
         }
 
 
 # SUBSCRIPTION PLANS
+
 
 class SubscriptionPlan(db.Model):
     __tablename__ = "subscription_plans"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    name: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False
-    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    price: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable=False
-    )
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
-    description: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True
-    )
+    description: Mapped[str] = mapped_column(Text, nullable=True)
 
     # Relationships
-    subscriptions = relationship(
-        "Subscription",
-        back_populates="plan"
-    )
+    subscriptions = relationship("Subscription", back_populates="plan")
+    myplans = relationship("MyPlan", back_populates="plan")
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
             "price": float(self.price),
-            "description": self.description
+            "description": self.description,
         }
 
 
 # SUBSCRIPTIONS
+
 
 class Subscription(db.Model):
     __tablename__ = "subscriptions"
@@ -298,58 +230,74 @@ class Subscription(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"),
-        nullable=False
-    )
+        ForeignKey("users.id"), nullable=False)
 
     plan_id: Mapped[int] = mapped_column(
-        ForeignKey("subscription_plans.id"),
-        nullable=False
+        ForeignKey("subscription_plans.id"), nullable=False
     )
 
-    status: Mapped[str] = mapped_column(
-        String(20),
-        nullable=False
-    )
+    active: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False)
 
-    start_date: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=False
-    )
+    stripe_subscription_id: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=True)
 
-    end_date: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False)
+
+    cancel_day: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # Relationships
-    user = relationship(
-        "User",
-        back_populates="subscriptions"
-    )
+    user = relationship("User", back_populates="subscriptions")
 
-    plan = relationship(
-        "SubscriptionPlan",
-        back_populates="subscriptions"
-    )
+    plan = relationship("SubscriptionPlan", back_populates="subscriptions")
 
-    payments = relationship(
-        "Payment",
-        back_populates="subscription"
-    )
+    payments = relationship("Payment", back_populates="subscription")
 
     def serialize(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
             "plan_id": self.plan_id,
-            "status": self.status,
-            "start_date": self.start_date,
-            "end_date": self.end_date
+            "active": self.active,
+            "created_at": self.created_at,
+            "cancel_day": self.cancel_day,
+        }
+
+
+# MYPLANS
+
+
+class MyPlan(db.Model):
+    __tablename__ = "myplans"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), nullable=False)
+    plan_id: Mapped[int] = mapped_column(
+        ForeignKey("subscription_plans.id"), nullable=False
+    )
+    tipo_plan: Mapped[DietExerciseType] = mapped_column(
+        Enum(DietExerciseType), nullable=True
+    )
+    plan_data: Mapped[dict] = mapped_column(db.JSON(), nullable=True)
+    # Relationships
+    user = relationship("User", back_populates="myplans")
+    plan = relationship("SubscriptionPlan", back_populates="myplans")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "plan_id": self.plan_id,
+            "tipo_plan": self.tipo_plan.value if self.tipo_plan else None,
+            "plan_data": getattr(self, "plan_data", None),
         }
 
 
 # PAYMENTS
+
 
 class Payment(db.Model):
     __tablename__ = "payments"
@@ -357,56 +305,37 @@ class Payment(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"),
-        nullable=False
-    )
+        ForeignKey("users.id"), nullable=False)
 
     order_id: Mapped[int] = mapped_column(
-        ForeignKey("orders.id"),
-        nullable=True
-    )
+        ForeignKey("orders.id"), nullable=True)
 
     subscription_id: Mapped[int] = mapped_column(
-        ForeignKey("subscriptions.id"),
-        nullable=True
+        ForeignKey("subscriptions.id"), nullable=True
     )
 
-    amount: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable=False
+    amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+
+    payment_method: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    status: Mapped[PaymentStatus] = mapped_column(
+        Enum(PaymentStatus), default=PaymentStatus.pending, nullable=False
     )
 
-    payment_method: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False
-    )
-
-    status: Mapped[str] = mapped_column(
-        String(20),
-        nullable=False
+    stripe_session_id: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=True
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
+        DateTime, default=datetime.utcnow, nullable=False
     )
 
     # Relationships
-    user = relationship(
-        "User",
-        back_populates="payments"
-    )
+    user = relationship("User", back_populates="payments")
 
-    order = relationship(
-        "Order",
-        back_populates="payments"
-    )
+    order = relationship("Order", back_populates="payments")
 
-    subscription = relationship(
-        "Subscription",
-        back_populates="payments"
-    )
+    subscription = relationship("Subscription", back_populates="payments")
 
     def serialize(self):
         return {
@@ -416,12 +345,13 @@ class Payment(db.Model):
             "subscription_id": self.subscription_id,
             "amount": float(self.amount),
             "payment_method": self.payment_method,
-            "status": self.status,
-            "created_at": self.created_at
+            "status": self.status.value,
+            "created_at": self.created_at,
         }
 
 
 # CARTS
+
 
 class Cart(db.Model):
     __tablename__ = "carts"
@@ -429,37 +359,26 @@ class Cart(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"),
-        nullable=False,
-        unique=True
+        ForeignKey("users.id"), nullable=False, unique=False
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
+        DateTime, default=datetime.utcnow, nullable=False
     )
 
     # Relationships
-    user = relationship(
-        "User",
-        back_populates="carts"
-    )
+    user = relationship("User", back_populates="carts")
 
     cart_items = relationship(
-        "CartItem",
-        back_populates="cart"
+        "CartItem", back_populates="cart", cascade="all, delete-orphan"
     )
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "created_at": self.created_at
-        }
+        return {"id": self.id, "user_id": self.user_id, "created_at": self.created_at}
 
 
 # CART ITEMS
+
 
 class CartItem(db.Model):
     __tablename__ = "cart_items"
@@ -467,32 +386,22 @@ class CartItem(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     cart_id: Mapped[int] = mapped_column(
-        ForeignKey("carts.id"),
-        nullable=False
-    )
+        ForeignKey("carts.id"), nullable=False)
 
     product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id"),
-        nullable=False
-    )
+        ForeignKey("products.id"), nullable=False)
 
     quantity: Mapped[int] = mapped_column(nullable=False)
 
     # Relationships
-    cart = relationship(
-        "Cart",
-        back_populates="cart_items"
-    )
+    cart = relationship("Cart", back_populates="cart_items")
 
-    product = relationship(
-        "Product",
-        back_populates="cart_items"
-    )
+    product = relationship("Product", back_populates="cart_items")
 
     def serialize(self):
         return {
             "id": self.id,
             "cart_id": self.cart_id,
             "product_id": self.product_id,
-            "quantity": self.quantity
+            "quantity": self.quantity,
         }
