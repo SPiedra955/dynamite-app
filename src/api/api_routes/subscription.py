@@ -90,3 +90,14 @@ def cancel_subscription(subscription_id):
 
     db.session.commit()
     return jsonify({"success": True, "data": subscription.serialize()}), 200
+
+# GET SUBSCRIPTION PLAN BY ID
+
+@api.route ('/subscription-plans/<int:plan_id>', methods = ['GET'])
+def get_subscription_plan (plan_id):
+    plan = db.session.get (SubscriptionPlan, plan_id)
+    
+    if not plan :
+        return jsonify ({"success": False, "msg": "not found"}), 404
+        
+    return jsonify ({"success": True, "data": plan.serialize()}), 200

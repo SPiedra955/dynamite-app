@@ -439,7 +439,7 @@ const Encuesta = () => {
               </div>
               <button
                 className="btn btn-danger rounded-pill px-5 py-3 w-100 fw-semibold"
-                onClick={() => navigate("/subscription-plans")}
+                onClick={() => navigate("/my-plans")}
               >
                 Ver {tipos.length > 1 ? "planes" : "plan"}
               </button>

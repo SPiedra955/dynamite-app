@@ -64,8 +64,8 @@ def create_subscription_checkout():
                     "quantity": 1,
                 }
             ],
-            success_url=f"https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/successful-payment?planId={plan.id}&session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/payment-error",
+            success_url=f"https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/successful-payment?planId={plan.id}&session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url="https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/payment-error",
             metadata={"plan_id": str(plan.id), "user_id": str(user_id)},
         )
 
@@ -155,8 +155,8 @@ def create_checkout_session():
             mode="payment",
             line_items=line_items,
             customer_email=data.get("email"),
-            success_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/successful-payment",
-            cancel_url="https://improved-broccoli-qjj4qq6pg67394pq-3000.app.github.dev/payment-error",
+            success_url="https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/successful-payment",
+            cancel_url="https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/payment-error",
             metadata={
                 "order_id": str(order.id),
             },

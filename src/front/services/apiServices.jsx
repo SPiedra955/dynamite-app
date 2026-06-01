@@ -67,7 +67,7 @@ services.getProducts = async () => {
             throw new Error("Something went wrong");
         }
 
-        // const data = await resp.json();
+        const data = await resp.json();
 
         return data.results || data;
 
