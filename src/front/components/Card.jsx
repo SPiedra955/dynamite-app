@@ -9,11 +9,16 @@ export const Card = () => {
             <div className="text-white p-4 p-md-5 h-100 rounded-3">
               <h3 className="card-title">Rutinas personalizadas</h3>
               <div className="border border-danger border-top my-3"></div>
-              <p className="card-text">
-                This is a wider card with supporting text below as a natural
-                lead-in to additional content.
+              <p className="text-white fw-bold fs-5">Transforma tu cuerpo de verdad.</p>
+              <p className="text-white">
+              Olvídate de las rutinas genéricas que no te dan ningún resultado.
+              Nuestra APP analiza tu nivel actual, tu equipamiento, tus objetivos y tu historial
+              para diseñar un plan específico de 12 semanas completamente personalizado para ti.
+              Sin importar tu nivel, nuestra IA entrenada se adapta a ti para que en menos de
+              dos meses consigas resultados reales.
               </p>
-              <a href="#plans" className="btn btn-danger rounded-pill px-5">
+              
+              <a href="#plans" className="btn btn-danger rounded-pill px-5 mt-3">
                 Empezar plan
               </a>
             </div>
@@ -48,11 +53,8 @@ export const Card = () => {
             <div className="text-white p-4 p-md-5 h-100 rounded-3">
               <h3 className="card-title">Dietas específicas</h3>
               <div className="border border-danger border-top my-3"></div>
-              <p className="card-text">
-                This is a wider card with supporting text below as a natural
-                lead-in to additional content.
-              </p>
-              <a href="#plans" className="btn btn-danger rounded-pill px-5">
+              <p className="text-white fw-bold fs-5">Tu dieta 100% personalizada y adaptada a tus objetivos.</p><p className="text-white-50">Mediante un sencillo cuestionario recogemos toda la información necesaria y nuestra IA  entrenada prepara un plan real de 12 semanas con menú semanal, con recetas riquísimas  y fáciles de preparar, perfectas para tu rutina y tu bolsillo. </p>
+              <a href="#plans" className="btn btn-danger rounded-pill px-5 mt-3">
                 Empezar plan
               </a>
             </div>

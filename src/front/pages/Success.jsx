@@ -14,20 +14,36 @@ const Success = () => {
         localStorage.removeItem("cart");
         dispatch({ type: "clearCart" });
 
-        const timer = setTimeout(() => {
-            if (planId) {
-                navigate(`/encuesta?planId=${planId}`, {
-                    state: { tipos: ["workout"] }
-                });
-            } else {
-                navigate(`/encuesta`);
-            }
-        }, 3000);
+        const fetchPlanAndRedirect = async () =>{
+            if (planId){
+                try {
+                    const resp = await fetch (`${import.meta.env.VITE_BACKEND_URL}/api/subscription-plans/${planId}`);
+                    const data = await resp.json();
+                    const nombre = data.data?.name?.toLowerCase() || "";
 
+                    let tipos;
+                    if (nombre.includes("dieta"))  tipos = ["diet"] ;
+                    else if (nombre.includes("ejercicio"))  tipos = ["workout"] ;
+                    else tipos = ["workout","diet"] ;
+
+                    navigate (`/encuesta?planId=${planId}`, {state: {tipos} });
+                    
+                } catch  {
+                    navigate (`/encuesta?planId=${planId}`, {state: {tipos: ["workout", "diet"]} });
+
+                    
+                }
+                }else {
+                    navigate("/");
+                }
+        };
+        
+           const timer = setTimeout(fetchPlanAndRedirect, 3000);
         return () => clearTimeout(timer);
     }, [dispatch, navigate, planId]);
 
 
+       
     return (
         <div className="container d-flex justify-content-center align-items-center vh-100">
             <div className="card shadow p-4" style={{ width: "400px" }}>
