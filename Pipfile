@@ -26,6 +26,8 @@ cloudinary = "*"
 stripe = "*"
 pandas = "*"
 
+google-generativeai = "*"
+
 [requires]
 python_version = "3.13"
 
