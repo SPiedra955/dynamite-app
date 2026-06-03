@@ -1,9 +1,9 @@
 import os
 import stripe  # type: ignore
 from flask import request, jsonify  # type: ignore
-from src.api.blueprint import api
+from api.blueprint import api
 
-from src.api.models import (
+from api.models import (
     db,
     User,
     Product,
@@ -22,7 +22,7 @@ from decimal import Decimal
 from flask_jwt_extended import get_jwt_identity, jwt_required  # type: ignore
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-
+URL = os.getenv("VITE_FRONTEND_URL")
 
 # =========================
 # SUBSCRIPTIONS CHECKOUT
@@ -64,8 +64,8 @@ def create_subscription_checkout():
                     "quantity": 1,
                 }
             ],
-            success_url=f"https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/successful-payment?planId={plan.id}&session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url="https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/payment-error",
+            success_url=f"{URL}/successful-payment?planId={plan.id}&session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{URL}/payment-error",
             metadata={"plan_id": str(plan.id), "user_id": str(user_id)},
         )
 
@@ -155,8 +155,8 @@ def create_checkout_session():
             mode="payment",
             line_items=line_items,
             customer_email=data.get("email"),
-            success_url="https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/successful-payment",
-            cancel_url="https://ominous-enigma-97r6pr7vprrjc77wq-3000.app.github.dev/payment-error",
+            success_url=f"{URL}/successful-payment",
+            cancel_url=f"{URL}/payment-error",
             metadata={
                 "order_id": str(order.id),
             },

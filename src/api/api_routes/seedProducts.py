@@ -1,7 +1,7 @@
 # api/services/product_seed_service.py
 import pandas as pd
 from flask import Flask, request, jsonify  # type: ignore
-from src.api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
+from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
 from sqlalchemy import select  # type: ignore
 
 def seed_products_from_csv(path: str):
