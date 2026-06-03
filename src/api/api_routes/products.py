@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify  # type: ignore
-from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
+from src.api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem
 from sqlalchemy import select  # type: ignore
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required  # type: ignore
-from api.blueprint import api
+from src.api.blueprint import api
 import pandas as pd
 
 

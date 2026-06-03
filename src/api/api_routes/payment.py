@@ -1,7 +1,7 @@
 import os
 import stripe  # type: ignore
 from flask import request, jsonify  # type: ignore
-from api.blueprint import api
+from src.api.blueprint import api
 
 from api.models import (
     db,

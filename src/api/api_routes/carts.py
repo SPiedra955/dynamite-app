@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem, MyPlan, DietExerciseType, PaymentStatus
+from src.api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem, MyPlan, DietExerciseType, PaymentStatus
 from sqlalchemy import select
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-from api.blueprint import api
+from src.api.blueprint import api
 from werkzeug.security import generate_password_hash
 from datetime import datetime
  
