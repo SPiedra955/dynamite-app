@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from werkzeug.security import generate_password_hash
 
-from api.models import (
+from src.api.models import (
     db,
     User,
     Product,
