@@ -3,7 +3,7 @@ import stripe  # type: ignore
 from flask import request, jsonify  # type: ignore
 from src.api.blueprint import api
 
-from api.models import (
+from src.api.models import (
     db,
     User,
     Product,
