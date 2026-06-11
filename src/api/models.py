@@ -173,7 +173,11 @@ class OrderItem(db.Model):
         ForeignKey("orders.id"), nullable=False)
 
     product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id"), nullable=False)
+        ForeignKey("products.id"), nullable=True)
+    
+    subscription_id: Mapped[int] = mapped_column(
+        ForeignKey("subscription_plans.id"), nullable=True
+    )
 
     quantity: Mapped[int] = mapped_column(nullable=False)
 
@@ -189,6 +193,7 @@ class OrderItem(db.Model):
             "id": self.id,
             "order_id": self.order_id,
             "product_id": self.product_id,
+            "subscription_id": self.subscription_id,
             "quantity": self.quantity,
             "price": float(self.price),
         }
@@ -240,10 +245,12 @@ class Subscription(db.Model):
         Boolean, default=False, nullable=False)
 
     stripe_subscription_id: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=True)
+        String(255), unique=True, nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, nullable=False)
+        DateTime, default=datetime.utcnow, nullable=False
+    )
 
     cancel_day: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 

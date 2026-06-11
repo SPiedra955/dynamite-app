@@ -55,7 +55,7 @@ const workout_fields = [
     label: "Lesiones o limitaciones",
     type: "text",
     required: false,
-    placeholder: "EJ:rodilla derecha",
+    placeholder: "Ej:rodilla derecha",
   },
   {
     key: "workout_goal",

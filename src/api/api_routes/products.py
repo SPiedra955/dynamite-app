@@ -6,21 +6,51 @@ from api.blueprint import api
 import pandas as pd
 
 
+def seed_products_from_csv(path: str):
+
+    df = pd.read_csv(path).head(20)
+
+    products = []
+
+    for _, row in df.iterrows():
+
+        product = Product(
+            name=row["product_name"],
+            description=row["product_description"],
+            price=row["price"],
+            stock=100,
+            category=row["product_category"],
+            image="src/front/assets/img/article.jpg"
+        )
+
+        products.append(product)
+
+    db.session.bulk_save_objects(products)
+    db.session.commit()
+
+    return len(products)
+
 
 @api.route("/seed-products", methods=["POST"])
 def seed_products():
+    try:
+        file_path = "src/front/datasets/bodybuilding_nutrition_products.csv"
 
+        count = seed_products_from_csv(file_path)
 
-    from api.api_routes.seedProducts import seed_products_from_csv
+        return jsonify({
+            "success": True,
+            "message": f"{count} products inserted"
+        }), 200
 
-    count = seed_products_from_csv(
-        "src/front/datasets/bodybuilding_nutrition_products.csv"
-    )
+    except Exception as e:
+        db.session.rollback()
 
-    return jsonify({
-        "success": True,
-        "msg": f"{count} products inserted"
-    }), 200
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 # ADD A NEW PRODUCT TO THE BBDD
 
 

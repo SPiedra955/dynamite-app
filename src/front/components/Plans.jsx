@@ -41,21 +41,15 @@ const Plans = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/subscription-plans`;
-
-        // console.log("Fetching:", url);
-
-        const resp = await fetch(url);
-
-        // console.log("Status:", resp.status);
+        const resp = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/subscription-plans`
+        );
 
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status}`);
         }
 
         const data = await resp.json();
-
-        // console.log("Data:", data);
 
         if (data.success) {
           setPlans(data.data);
@@ -72,6 +66,7 @@ const Plans = () => {
 
     fetchPlans();
   }, []);
+
   const getType = (plan) => {
     const nombre = plan.name.toLowerCase();
     if (nombre.includes("dieta")) return ["diet"];
