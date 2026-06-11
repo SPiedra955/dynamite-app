@@ -162,9 +162,7 @@ const Encuesta = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [countdown, setCountdown] = useState(60);
   const [showModal, setShowModal] = useState(false);
-  const countdownRef = useRef(null);
 
   useEffect(() => {
     const id = searchParams.get("planId");
@@ -178,24 +176,7 @@ const Encuesta = () => {
       console.warn("No hay tipos de plan");
     }
   }, [tipos]);
-  // Inicia o detiene el countdown según el estado de loading
-  useEffect(() => {
-    if (loading) {
-      setCountdown(120);
-      countdownRef.current = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(countdownRef.current);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      clearInterval(countdownRef.current);
-    }
-    return () => clearInterval(countdownRef.current);
-  }, [loading]);
+
 
   useEffect(() => {
     if (!error) return;
@@ -294,49 +275,39 @@ const Encuesta = () => {
     }
   };
 
-  // Porcentaje para el arco circular del countdown
-  const radius = 54;
-  const circumference = 2 * Math.PI * radius;
-  const progress = (countdown / 120) * circumference;
 
   return (
     <div className="bg-black min-vh-100 py-5 mt-5">
       <div className="container col-md-8 col-lg-6 mx-auto">
 
-        {/* Pantalla de carga con countdown */}
+        {/* Pantalla de carga */}
+        {/* Pantalla de carga */}
         {loading && (
-          <div className="d-flex flex-column align-items-center justify-content-center py-5 gap-4">
-            <p className="text-danger text-uppercase fw-semibold small mb-0">Generando tu plan ¡en unos segundos te explotará la cabeza!</p>
-            <p className="text-secondary small text-center mb-0">Esto puede tardar hasta un par de minutos...</p>
+          <div
+            className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-black"
+            style={{ zIndex: 9999 }}
+          >
+            <div className="text-center px-3">
 
-            {/* Círculo de cuenta regresiva */}
-            <div className="position-relative d-flex align-items-center justify-content-center">
-              <svg width="140" height="140" viewBox="0 0 140 140">
-                {/* Círculo de fondo */}
-                <circle
-                  cx="70" cy="70" r={radius}
-                  fill="none"
-                  stroke="#2a2a2a"
-                  strokeWidth="8"
-                />
-                {/* Arco de progreso */}
-                <circle
-                  cx="70" cy="70" r={radius}
-                  fill="none"
-                  stroke="#e63946"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={circumference - progress}
-                  transform="rotate(-90 70 70)"
-                  style={{ transition: "stroke-dashoffset 1s linear" }}
-                />
-              </svg>
-              {/* Número en el centro */}
-              <div className="position-absolute text-center">
-                <span className="text-white fw-bold" style={{ fontSize: "2.2rem" }}>{countdown}</span>
-                <p className="text-secondary mb-0" style={{ fontSize: "0.7rem" }}>segundos</p>
+              <div
+                className="spinner-border text-danger mb-4"
+                style={{
+                  width: "clamp(3rem, 10vw, 5rem)",
+                  height: "clamp(3rem, 10vw, 5rem)"
+                }}
+                role="status"
+              >
+                <span className="visually-hidden">Loading...</span>
               </div>
+
+              <h5 className="text-danger fw-semibold mb-2">
+                Generando tu plan personalizado
+              </h5>
+
+              <p className="text-secondary small mb-0">
+                Esto puede tardar unos segundos mientras la IA trabaja
+              </p>
+
             </div>
           </div>
         )}

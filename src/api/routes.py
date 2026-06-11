@@ -14,6 +14,8 @@ from api.api_routes.payment import *
 from api.api_routes.carts import *
 from api.api_routes.subscription import *
 from api.api_routes.subscriptionPlans import *
+from api.api_routes.openia import *
+import os
 # Allow CORS requests to this API
 CORS(api)
 
@@ -32,6 +34,9 @@ def handle_hello():
 
 @api.route('/seed', methods=['GET'])
 def seed_admin():
+    
+    secret_pass = os.getenv("ADMIN_PASS")
+
     existing_admin = User.query.filter_by(email="admin@test.com").first()
 
     if existing_admin:
@@ -39,7 +44,7 @@ def seed_admin():
 
     admin = User(
         email="admin@test.com",
-        password=generate_password_hash("1234"),
+        password=generate_password_hash(secret_pass),
         name="Admin",
         age=30,
         weight=70,
@@ -54,23 +59,24 @@ def seed_admin():
     print("Admin created")
     return jsonify({"msg": "Admin created"}), 201
 
-# SEED PLANS 
-@api.route('/seed-plans',methods =['GET']) 
+# SEED PLANS
+
+
+@api.route('/seed-plans', methods=['GET'])
 def seed_plans():
     if SubscriptionPlan.query.count() > 0:
-        return jsonify({"msg":"Plans already exist"}),200
+        return jsonify({"msg": "Plans already exist"}), 200
     plans = [
-        SubscriptionPlan(name="Plan Dieta", price=9.99, description="Plan de alimentacion personalizado de 12 semanas"),
-        SubscriptionPlan(name="Plan Ejercicio", price=9.99, description="Plan de entrenamiento de 12 semanas"),
-        SubscriptionPlan(name="Plan Completo", price=19.99, description="Plan de dieta y ejercicio personalizado de 12 semanas"),
+        SubscriptionPlan(name="Plan Dieta", price=9.99,
+                         description="Plan de alimentacion personalizado de 12 semanas"),
+        SubscriptionPlan(name="Plan Ejercicio", price=9.99,
+                         description="Plan de entrenamiento de 12 semanas"),
+        SubscriptionPlan(name="Plan Completo", price=19.99,
+                         description="Plan de dieta y ejercicio personalizado de 12 semanas"),
     ]
-    db.session.add_all (plans)
+    db.session.add_all(plans)
     db.session.commit()
-    return jsonify({"msg":"Plans created"}), 201
-
-
-
-
+    return jsonify({"msg": "Plans created"}), 201
 
 
 # LOGIN/REGISTER
@@ -139,6 +145,7 @@ def auth():
             "success": False,
             "data": "internal server error"}), 500
 # seed test-comands
+
 
 @api.route('/seed-test-data', methods=['GET'])
 def seed_test_data():
