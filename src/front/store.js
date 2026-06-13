@@ -20,12 +20,18 @@ export const initialStore = () => {
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
 
-  case "set_profile_image": {
-    const updatedUser = {
-    ...store.user,
-    photo: action.payload.url,
-    photo_public_id: action.payload.public_id
-    };
+    case 'getSubs':
+      return {
+        ...store,
+        subs: action.payload
+      };
+
+    case "set_profile_image": {
+      const updatedUser = {
+        ...store.user,
+        photo: action.payload.url,
+        photo_public_id: action.payload.public_id
+      };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       return { ...store, user: updatedUser };
     }

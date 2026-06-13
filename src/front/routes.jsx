@@ -14,11 +14,11 @@ import Auth from "./pages/Auth";
 import Products from "./pages/Products"
 import Success from "./pages/Success";
 import PaymentError from "./pages/PaymentError";
-// import { Subscription_plans } from "./pages/Subscription_plans";
 import Encuesta from "./pages/Encuesta";
 import Perfil from "./pages/Perfil";
 import Misplanes from "./pages/Misplanes";
 import Plans from "./components/Plans"
+import AdminPanel from "./pages/AdminPanel"
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,6 +44,7 @@ export const router = createBrowserRouter(
       <Route path="/encuesta" element={<Encuesta />} />
       <Route path="/profile" element={<Perfil />} />
       <Route path="/my-plans" element={<Misplanes />} />
+      <Route path="/admin" element={<AdminPanel />} />
     </Route>
   )
 );

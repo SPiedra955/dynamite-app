@@ -127,4 +127,25 @@ services.getSubscriptions = async () => {
     }
 };
 
+/* GET SUBSCRIPTIONS */
+
+services.getSubscribers = async () => {
+    try {
+        const resp = await fetch(`${url}/api/users/subscriptions`);
+
+        if (!resp.ok) {
+            throw new Error("Something went wrong");
+        }
+
+        const data = await resp.json();
+        // console.log(data)
+        return data.results || data;
+
+    } catch (error) {
+        console.error("getSubs error", error);
+        return [];
+    }
+};
+
+
 

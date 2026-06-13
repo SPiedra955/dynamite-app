@@ -28,6 +28,27 @@ def get_subscription_plans():
     transform = [plan.serialize() for plan in plans]
     return jsonify({"success": True, "data": transform}), 200
 
+# GET ALL USER SUBSCRIPTIONS 
+
+@api.route('/users/subscriptions', methods=['GET'])
+def get_users_subscriptions():
+    result = db.session.execute(
+        select(User, Subscription, SubscriptionPlan)
+        .outerjoin(Subscription, Subscription.user_id == User.id)
+        .outerjoin(SubscriptionPlan, Subscription.plan_id == SubscriptionPlan.id)
+    ).all()
+    
+    data = []
+
+    for user, sub, plan in result:
+        data.append({
+            "user": user.serialize(),
+            "subscription": sub.serialize() if sub else None,
+            "plan": plan.serialize() if plan else None
+        })
+
+    return jsonify({"success": True, "data": data}), 200
+
 
 @api.route('/subscriptions', methods=['GET'])
 def get_subscriptions():
@@ -93,11 +114,34 @@ def cancel_subscription(subscription_id):
 
 # GET SUBSCRIPTION PLAN BY ID
 
-@api.route ('/subscription-plans/<int:plan_id>', methods = ['GET'])
-def get_subscription_plan (plan_id):
-    plan = db.session.get (SubscriptionPlan, plan_id)
-    
-    if not plan :
-        return jsonify ({"success": False, "msg": "not found"}), 404
-        
-    return jsonify ({"success": True, "data": plan.serialize()}), 200
+
+@api.route('/subscription-plans/<int:plan_id>', methods=['GET'])
+def get_subscription_plan(plan_id):
+    plan = db.session.get(SubscriptionPlan, plan_id)
+
+    if not plan:
+        return jsonify({"success": False, "msg": "not found"}), 404
+
+    return jsonify({"success": True, "data": plan.serialize()}), 200
+
+# BAN USERS
+
+@api.route('/admin/user/<int:user_id>/ban', methods=['PATCH'])
+def ban_user(user_id):
+    user = User.query.get(user_id)
+
+    user.is_banned = True
+    db.session.commit()
+
+    return jsonify({"msg": "User banned"})
+
+
+@api.route('/admin/user/<int:user_id>/unban', methods=['PATCH'])
+def unban_user(user_id):
+    user = User.query.get(user_id)
+
+    user.is_banned = False
+    user.ban_reason = None
+    db.session.commit()
+
+    return jsonify({"msg": "User unbanned"})

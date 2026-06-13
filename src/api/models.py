@@ -51,6 +51,10 @@ class User(db.Model):
     objective: Mapped[str] = mapped_column(String(50), nullable=True)
 
     photo: Mapped[str] = mapped_column(String(255), nullable=True)
+    
+    is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    ban_reason: Mapped[str] = mapped_column(Text, nullable=True)
 
     is_active: Mapped[bool] = mapped_column(
         Boolean, default=True, nullable=False)
@@ -81,6 +85,8 @@ class User(db.Model):
             "height": self.height,
             "objective": self.objective,
             "photo": self.photo,
+            "is_banned": self.is_banned,
+            "ban_reason": self.ban_reason,
             "is_active": self.is_active,
             "created_at": self.created_at.isoformat(),
         }
