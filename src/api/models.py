@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy  # type: ignore
 from sqlalchemy import String, Boolean, ForeignKey, DateTime, Numeric, Text, Enum  # type: ignore
 from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 import enum
+from sqlalchemy import CheckConstraint
 
 db = SQLAlchemy()
 
@@ -167,6 +168,14 @@ class Order(db.Model):
 class OrderItem(db.Model):
     __tablename__ = "order_items"
 
+    __table_args__ = (
+        CheckConstraint(
+            "(product_id IS NOT NULL AND subscription_plan_id IS NULL) OR "
+            "(product_id IS NULL AND subscription_plan_id IS NOT NULL)",
+            name="check_order_item_type",
+        ),
+    )
+
     id: Mapped[int] = mapped_column(primary_key=True)
 
     order_id: Mapped[int] = mapped_column(
@@ -174,18 +183,18 @@ class OrderItem(db.Model):
 
     product_id: Mapped[int] = mapped_column(
         ForeignKey("products.id"), nullable=True)
-    
-    subscription_id: Mapped[int] = mapped_column(
+
+    subscription_plan_id: Mapped[int] = mapped_column(
         ForeignKey("subscription_plans.id"), nullable=True
     )
 
     quantity: Mapped[int] = mapped_column(nullable=False)
 
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
-
     # Relationships
     order = relationship("Order", back_populates="order_items")
-
+    subscription_plan = relationship(
+        "SubscriptionPlan", back_populates="order_items")
     product = relationship("Product", back_populates="order_items")
 
     def serialize(self):
@@ -193,7 +202,7 @@ class OrderItem(db.Model):
             "id": self.id,
             "order_id": self.order_id,
             "product_id": self.product_id,
-            "subscription_id": self.subscription_id,
+            "subscription_plan_id": self.subscription_plan_id,
             "quantity": self.quantity,
             "price": float(self.price),
         }
@@ -216,6 +225,7 @@ class SubscriptionPlan(db.Model):
     # Relationships
     subscriptions = relationship("Subscription", back_populates="plan")
     myplans = relationship("MyPlan", back_populates="plan")
+    order_items = relationship("OrderItem", back_populates="subscription_plan")
 
     def serialize(self):
         return {
@@ -247,7 +257,11 @@ class Subscription(db.Model):
     stripe_subscription_id: Mapped[str] = mapped_column(
         String(255), unique=True, nullable=True
     )
-
+    
+    stripe_customer_id: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=True
+    )
+    
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
@@ -333,6 +347,10 @@ class Payment(db.Model):
         String(255), unique=True, nullable=True
     )
 
+    stripe_invoice_id: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=True
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
@@ -353,6 +371,8 @@ class Payment(db.Model):
             "amount": float(self.amount),
             "payment_method": self.payment_method,
             "status": self.status.value,
+            "stripe_session_id": self.stripe_session_id,
+            "stripe_invoice_id": self.stripe_invoice_id,
             "created_at": self.created_at,
         }
 

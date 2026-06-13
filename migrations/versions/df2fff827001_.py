@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 8a2984ebc5cb
+Revision ID: df2fff827001
 Revises: 
-Create Date: 2026-06-11 13:49:40.357958
+Create Date: 2026-06-13 11:59:28.376447
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8a2984ebc5cb'
+revision = 'df2fff827001'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -84,11 +84,13 @@ def upgrade():
     sa.Column('plan_id', sa.Integer(), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
     sa.Column('stripe_subscription_id', sa.String(length=255), nullable=True),
+    sa.Column('stripe_customer_id', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('cancel_day', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['plan_id'], ['subscription_plans.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('stripe_customer_id'),
     sa.UniqueConstraint('stripe_subscription_id')
     )
     op.create_table('cart_items',
@@ -104,12 +106,13 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('order_id', sa.Integer(), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=True),
-    sa.Column('subscription_id', sa.Integer(), nullable=True),
+    sa.Column('subscription_plan_id', sa.Integer(), nullable=True),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
+    sa.CheckConstraint('(product_id IS NOT NULL AND subscription_plan_id IS NULL) OR (product_id IS NULL AND subscription_plan_id IS NOT NULL)', name='check_order_item_type'),
     sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
-    sa.ForeignKeyConstraint(['subscription_id'], ['subscription_plans.id'], ),
+    sa.ForeignKeyConstraint(['subscription_plan_id'], ['subscription_plans.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('payments',
@@ -121,11 +124,13 @@ def upgrade():
     sa.Column('payment_method', sa.String(length=50), nullable=False),
     sa.Column('status', sa.Enum('pending', 'cancelled', 'paid', 'refunded', name='paymentstatus'), nullable=False),
     sa.Column('stripe_session_id', sa.String(length=255), nullable=True),
+    sa.Column('stripe_invoice_id', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ),
     sa.ForeignKeyConstraint(['subscription_id'], ['subscriptions.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('stripe_invoice_id'),
     sa.UniqueConstraint('stripe_session_id')
     )
     # ### end Alembic commands ###

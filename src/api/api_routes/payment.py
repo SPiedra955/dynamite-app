@@ -40,8 +40,9 @@ def create_subscription_checkout():
         plan_id = data.get("id")
 
         user_id = int(get_jwt_identity())
-
+        
         plan = SubscriptionPlan.query.get(plan_id)
+        
 
         if not plan:
             return jsonify({"error": "Plan not found"}), 404
@@ -181,51 +182,55 @@ def create_checkout_session():
 # STRIPE WEBHOOK
 # =========================
 
+# =========================
+# STRIPE WEBHOOK
+# =========================
 
 @api.route("/stripe-webhook", methods=["POST"])
 def stripe_webhook():
 
     endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
-
     sig_header = request.headers.get("Stripe-Signature")
-
     payload = request.get_data(cache=False)
 
     try:
-
         event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret)
-
+            payload, sig_header, endpoint_secret
+        )
     except Exception as e:
-
         return jsonify({"error": str(e)}), 400
-
-    # print("WEBHOOK HIT")
-    # print(event["type"])
 
     if event["type"] != "checkout.session.completed":
         return jsonify({"status": "ignored"}), 200
 
     session = event["data"]["object"].to_dict()
+    session_id = session.get("id")
 
-    # print("EVENT RECEIVED:", event["type"])
-    # print("SESSION MODE:", session["mode"])
-
-    # =========================
+    # ==================================================
     # SUBSCRIPTION PAYMENT
-    # =========================
+    # ==================================================
 
-    if session["mode"] == "subscription":
+    if session.get("mode") == "subscription":
 
         try:
-
             metadata = session.get("metadata", {})
 
             user_id = int(metadata["user_id"])
-
             plan_id = int(metadata["plan_id"])
 
+            plan = SubscriptionPlan.query.get(plan_id)
+            if not plan:
+                return jsonify({"error": "Plan not found"}), 404
+
             stripe_subscription_id = session.get("subscription")
+
+            # idempotencia
+            existing = Subscription.query.filter_by(
+                stripe_subscription_id=stripe_subscription_id
+            ).first()
+
+            if existing:
+                return jsonify({"status": "already processed"}), 200
 
             subscription = Subscription(
                 user_id=user_id,
@@ -237,6 +242,18 @@ def stripe_webhook():
             )
 
             db.session.add(subscription)
+            db.session.flush()
+
+            payment = Payment(
+                user_id=user_id,
+                subscription_id=subscription.id,
+                amount=plan.price,
+                payment_method="stripe",
+                status=PaymentStatus.paid,
+                stripe_session_id=session_id,
+            )
+
+            db.session.add(payment)
             db.session.commit()
 
             return jsonify({"status": "subscription created"}), 200
@@ -245,55 +262,82 @@ def stripe_webhook():
             db.session.rollback()
             print("SUBSCRIPTION WEBHOOK ERROR:", repr(e))
             return jsonify({"error": str(e)}), 500
-    # =========================
-    # NORMAL PAYMENT
-    # =========================
 
-    stripe_session_id = session["id"]
+    # ==================================================
+    # NORMAL ORDER PAYMENT
+    # ==================================================
 
-    order = Order.query.filter_by(stripe_session_id=stripe_session_id).first()
+    try:
+        order = Order.query.filter_by(
+            stripe_session_id=session_id
+        ).first()
 
-    if not order:
-        return jsonify({"error": "Order not found"}), 404
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
 
-    order.status = "paid"
+        # idempotencia (evita doble webhook)
+        existing_payment = Payment.query.filter_by(
+            stripe_session_id=session_id
+        ).first()
 
-    # descontar stock
-    for item in order.order_items:
+        if existing_payment:
+            return jsonify({"status": "already processed"}), 200
 
-        product = item.product
+        order.status = "paid"
 
-        product.stock -= item.quantity
+        # validar + descontar stock
+        for item in order.order_items:
 
-    payment = Payment(
-        user_id=order.user_id,
-        order_id=order.id,
-        amount=order.total_price,
-        payment_method="stripe",
-        status=PaymentStatus.paid,
-        stripe_session_id=stripe_session_id,
-        created_at=datetime.now(UTC),
-    )
+            product = item.product
 
-    db.session.add(payment)
+            if not product:
+                raise ValueError("Product not found")
 
-    cart = Cart(user_id=order.user_id, created_at=datetime.now(UTC))
+            if product.stock < item.quantity:
+                raise ValueError(
+                    f"Insufficient stock for product {product.id}"
+                )
 
-    db.session.add(cart)
+            product.stock -= item.quantity
 
-    db.session.flush()
-
-    for item in order.order_items:
-
-        cart_item = CartItem(
-            cart_id=cart.id, product_id=item.product_id, quantity=item.quantity
+        payment = Payment(
+            user_id=order.user_id,
+            order_id=order.id,
+            amount=order.total_price,
+            payment_method="stripe",
+            status=PaymentStatus.paid,
+            stripe_session_id=session_id,
+            created_at=datetime.now(UTC),
         )
 
-        db.session.add(cart_item)
+        db.session.add(payment)
 
-    db.session.commit()
+        cart = Cart(
+            user_id=order.user_id,
+            created_at=datetime.now(UTC),
+        )
 
-    return jsonify({"status": "payment success"}), 200
+        db.session.add(cart)
+        db.session.flush()
+
+        for item in order.order_items:
+
+            cart_item = CartItem(
+                cart_id=cart.id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+            )
+
+            db.session.add(cart_item)
+
+        db.session.commit()
+
+        return jsonify({"status": "payment success"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print("ORDER WEBHOOK ERROR:", repr(e))
+        return jsonify({"error": str(e)}), 500
 
 @api.route("/my-subscription", methods=["GET"])
 @jwt_required()
