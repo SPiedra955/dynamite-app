@@ -148,4 +148,30 @@ services.getSubscribers = async () => {
 };
 
 
+/* UPDATE SUBSCRIPTION */
 
+services.updateSubscription = async (id, subscriptionData) => {
+    try {
+        const resp = await fetch(
+            `${url}/api/update/subscription/${id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(subscriptionData)
+            }
+        );
+        if (!resp.ok) {
+            throw new Error("Something went wrong");
+        }
+
+        const data = await resp.json();
+        // console.log(data)
+        return data.results || data;
+
+    } catch (error) {
+        console.error("update sub error", error);
+        return [];
+    }
+};

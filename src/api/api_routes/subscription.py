@@ -145,3 +145,33 @@ def unban_user(user_id):
     db.session.commit()
 
     return jsonify({"msg": "User unbanned"})
+
+@api.route('/update/subscription/<int:id>', methods=['PUT'])
+def update_subscription_plan(id):
+    subscription = db.session.get(Subscription, id)
+
+    if not subscription:
+        return jsonify({"success": False, "msg": "not found"}), 404
+
+    body = request.get_json()
+    
+    subscription.active = body.get(
+        "active",
+        subscription.active
+    )
+
+    cancel_day = body.get("cancel_day")
+
+    if cancel_day:
+        subscription.cancel_day = datetime.strptime(
+            cancel_day,
+            "%Y-%m-%d"
+        )
+
+    db.session.commit()
+
+
+    return jsonify({
+        "success": True,
+        "data": subscription.serialize()
+    }), 200

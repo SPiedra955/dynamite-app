@@ -51,7 +51,7 @@ class User(db.Model):
     objective: Mapped[str] = mapped_column(String(50), nullable=True)
 
     photo: Mapped[str] = mapped_column(String(255), nullable=True)
-    
+
     is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
 
     ban_reason: Mapped[str] = mapped_column(Text, nullable=True)
@@ -263,11 +263,11 @@ class Subscription(db.Model):
     stripe_subscription_id: Mapped[str] = mapped_column(
         String(255), unique=True, nullable=True
     )
-    
+
     stripe_customer_id: Mapped[str] = mapped_column(
         String(255), unique=True, nullable=True
     )
-    
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
@@ -287,8 +287,8 @@ class Subscription(db.Model):
             "user_id": self.user_id,
             "plan_id": self.plan_id,
             "active": self.active,
-            "created_at": self.created_at,
-            "cancel_day": self.cancel_day,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "cancel_day": self.cancel_day.isoformat() if self.cancel_day else None,
         }
 
 
