@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 8dc61f1bc5f6
-Revises: 0763d677d453
-Create Date: 2026-05-08 14:19:58.281905
+Revision ID: 4f1692fbef21
+Revises: 
+Create Date: 2026-06-13 16:07:40.323382
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8dc61f1bc5f6'
-down_revision = '0763d677d453'
+revision = '4f1692fbef21'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -30,9 +30,9 @@ def upgrade():
     )
     op.create_table('subscription_plans',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
-    sa.Column('description', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -41,11 +41,13 @@ def upgrade():
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(length=255), nullable=False),
     sa.Column('role', sa.String(length=20), nullable=False),
-    sa.Column('age', sa.Integer(), nullable=False),
-    sa.Column('weight', sa.Float(), nullable=False),
-    sa.Column('height', sa.Float(), nullable=False),
-    sa.Column('objective', sa.String(length=50), nullable=False),
+    sa.Column('age', sa.Integer(), nullable=True),
+    sa.Column('weight', sa.Float(), nullable=True),
+    sa.Column('height', sa.Float(), nullable=True),
+    sa.Column('objective', sa.String(length=50), nullable=True),
     sa.Column('photo', sa.String(length=255), nullable=True),
+    sa.Column('is_banned', sa.Boolean(), nullable=False),
+    sa.Column('ban_reason', sa.Text(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -56,14 +58,24 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('user_id')
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('myplans',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('plan_id', sa.Integer(), nullable=False),
+    sa.Column('tipo_plan', sa.Enum('diet', 'workout', name='dietexercisetype'), nullable=True),
+    sa.Column('plan_data', sa.JSON(), nullable=True),
+    sa.ForeignKeyConstraint(['plan_id'], ['subscription_plans.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('orders',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('total_price', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('stripe_session_id', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -72,12 +84,16 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('plan_id', sa.Integer(), nullable=False),
-    sa.Column('status', sa.String(length=20), nullable=False),
-    sa.Column('start_date', sa.DateTime(), nullable=False),
-    sa.Column('end_date', sa.DateTime(), nullable=False),
+    sa.Column('active', sa.Boolean(), nullable=False),
+    sa.Column('stripe_subscription_id', sa.String(length=255), nullable=True),
+    sa.Column('stripe_customer_id', sa.String(length=255), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('cancel_day', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['plan_id'], ['subscription_plans.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('stripe_customer_id'),
+    sa.UniqueConstraint('stripe_subscription_id')
     )
     op.create_table('cart_items',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -91,11 +107,14 @@ def upgrade():
     op.create_table('order_items',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('order_id', sa.Integer(), nullable=False),
-    sa.Column('product_id', sa.Integer(), nullable=False),
+    sa.Column('product_id', sa.Integer(), nullable=True),
+    sa.Column('subscription_plan_id', sa.Integer(), nullable=True),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
+    sa.CheckConstraint('(product_id IS NOT NULL AND subscription_plan_id IS NULL) OR (product_id IS NULL AND subscription_plan_id IS NOT NULL)', name='check_order_item_type'),
     sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
+    sa.ForeignKeyConstraint(['subscription_plan_id'], ['subscription_plans.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('payments',
@@ -105,32 +124,28 @@ def upgrade():
     sa.Column('subscription_id', sa.Integer(), nullable=True),
     sa.Column('amount', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('payment_method', sa.String(length=50), nullable=False),
-    sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('status', sa.Enum('pending', 'cancelled', 'paid', 'refunded', name='paymentstatus'), nullable=False),
+    sa.Column('stripe_session_id', sa.String(length=255), nullable=True),
+    sa.Column('stripe_invoice_id', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ),
     sa.ForeignKeyConstraint(['subscription_id'], ['subscriptions.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('stripe_invoice_id'),
+    sa.UniqueConstraint('stripe_session_id')
     )
-    op.drop_table('user')
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.create_table('user',
-    sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
-    sa.Column('email', sa.VARCHAR(length=120), autoincrement=False, nullable=False),
-    sa.Column('password', sa.VARCHAR(), autoincrement=False, nullable=False),
-    sa.Column('is_active', sa.BOOLEAN(), autoincrement=False, nullable=False),
-    sa.PrimaryKeyConstraint('id', name='user_pkey'),
-    sa.UniqueConstraint('email', name='user_email_key')
-    )
     op.drop_table('payments')
     op.drop_table('order_items')
     op.drop_table('cart_items')
     op.drop_table('subscriptions')
     op.drop_table('orders')
+    op.drop_table('myplans')
     op.drop_table('carts')
     op.drop_table('users')
     op.drop_table('subscription_plans')
