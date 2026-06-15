@@ -44,7 +44,7 @@ def new_user():
 # UPDATE USER
 
 
-@api.route("/update/user/<int:id>", methods=['PUT'])
+@api.route("/admin/update/user/<int:id>", methods=['PUT'])
 def update_user(id):
     user = db.session.get(User, id)
 

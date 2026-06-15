@@ -131,7 +131,13 @@ services.getSubscriptions = async () => {
 
 services.getSubscribers = async () => {
     try {
-        const resp = await fetch(`${url}/api/users/subscriptions`);
+        const resp = await fetch(`${url}/api/users/subscriptions`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+        });
 
         if (!resp.ok) {
             throw new Error("Something went wrong");
@@ -157,7 +163,9 @@ services.updateSubscription = async (id, subscriptionData) => {
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+
                 },
                 body: JSON.stringify(subscriptionData)
             }
@@ -173,5 +181,68 @@ services.updateSubscription = async (id, subscriptionData) => {
     } catch (error) {
         console.error("update sub error", error);
         return [];
+    }
+};
+
+/* BAN USER */
+
+services.toggleBan = async (userId, userData) => {
+    try {
+        const resp = await fetch(
+            `${url}/api/admin/users/${userId}/ban`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+
+                },
+                body: JSON.stringify(userData)
+            }
+        );
+        if (!resp.ok) {
+            throw new Error("Something went wrong");
+        }
+
+        const data = await resp.json();
+        // console.log(data)
+        return data.results || data;
+
+
+    } catch (error) {
+        console.error("toggleBan error:", error);
+        throw error;
+    }
+};
+
+
+/* UPDATE USER */
+
+services.updateUser = async (userId, userData) => {
+    try {
+        const resp = await fetch(
+            `${url}/api/admin/update/user/${userId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+
+                },
+                body: JSON.stringify(userData)
+            }
+        );
+        if (!resp.ok) {
+            throw new Error("Something went wrong");
+        }
+
+        const data = await resp.json();
+        // console.log(data)
+        return data.results || data;
+
+
+    } catch (error) {
+        console.error("Error updating user:", error);
+        throw error;
     }
 };

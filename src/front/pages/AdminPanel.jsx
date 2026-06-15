@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import services from "../services/apiServices";
+import Swal from "sweetalert2";
 
 export const AdminPanel = () => {
 
@@ -47,21 +48,13 @@ export const AdminPanel = () => {
     };
 
     const handleEditSubscription = (sub) => {
-        if (!sub.subscription) {
-            alert("Este usuario no tiene suscripción");
-            return;
-        }
-        console.log(sub.subscription.cancel_day)
-
         setSelectedSub({
             subscriptionId: sub.subscription.id,
-            planId: sub.plan?.id,
             active: sub.subscription.active,
-            cancel_day: sub.subscription?.cancel_day
-                ? new Date(sub.subscription.cancel_day)
-                    .toISOString()
-                    .split("T")[0]
-                : ""
+            cancel_day: sub.subscription.cancel_day
+                ? new Date(sub.subscription.cancel_day).toISOString().split("T")[0]
+                : "",
+            created_at: sub.subscription.created_at
         });
 
         setShowSubModal(true);
@@ -78,7 +71,6 @@ export const AdminPanel = () => {
 
             setShowUserModal(false);
 
-            // recargar usuarios
         } catch (error) {
             console.error(error);
         }
@@ -86,19 +78,104 @@ export const AdminPanel = () => {
 
     const saveSubscription = async () => {
         try {
+            const createdAt = selectedSub.created_at; // asegúrate de tenerlo
+            const cancelDay = selectedSub.cancel_day;
+
+            if (cancelDay && createdAt) {
+                const created = new Date(createdAt);
+                const cancel = new Date(cancelDay);
+
+                if (cancel < created) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Fecha no válida",
+                        text: "La cancelación no puede ser anterior a la creación de la suscripción",
+                        confirmButtonText: "Entendido"
+                    });
+                    return;
+                }
+            }
+
             await services.updateSubscription(
                 selectedSub.subscriptionId,
-            {
-                active: selectedSub.active,
-                cancel_day: selectedSub.cancel_day
+                {
+                    active: selectedSub.active,
+                    cancel_day: selectedSub.cancel_day
+                }
+            );
+            dispatch({
+                type: "updateSubStatus",
+                payload: {
+                    subscriptionId: selectedSub.subscriptionId,
+                    updates: {
+                        active: selectedSub.active,
+                        cancel_day: selectedSub.cancel_day
+                    }
+                }
             });
+
             await loadSubscribers();
+
             setShowSubModal(false);
 
-            // recargar datos
         } catch (error) {
             console.error(error);
         }
+    };
+
+
+    const handleBanToggle = async (user) => {
+        const isBan = !user.is_banned;
+
+        const result = await Swal.fire({
+            title: isBan ? "Ban User" : "Unban User",
+            input: "textarea",
+            inputLabel: "Motivo",
+            inputPlaceholder: `Introduce el motivo para ${isBan ? "banear" : "desbanear"} al usuario`,
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Debes introducir un motivo";
+                }
+            },
+            showCancelButton: true,
+            confirmButtonText: isBan ? "Ban" : "Unban",
+            cancelButtonText: "Cancelar",
+            icon: "warning"
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            await services.toggleBan(user.id, {
+                is_banned: isBan,
+                reason: result.value
+            });
+
+            await loadSubscribers();
+
+            Swal.fire({
+                icon: "success",
+                title: isBan ? "Usuario baneado" : "Usuario desbaneado",
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: error.message
+            });
+        }
+    };
+
+    const handleShowNote = (user) => {
+        Swal.fire({
+            title: "Ban Note",
+            text: user.ban_reason || "No hay motivo registrado",
+            icon: "info",
+            confirmButtonText: "Cerrar"
+        });
     };
 
     return (
@@ -124,21 +201,21 @@ export const AdminPanel = () => {
 
                     <div className="col-md-4">
                         <div className="card bg-black border-secondary p-3">
-                            <h5>Total Users</h5>
+                            <h5>Usuarios totales</h5>
                             <h2>{total}</h2>
                         </div>
                     </div>
 
                     <div className="col-md-4">
                         <div className="card bg-black border-success p-3">
-                            <h5>Active Subs</h5>
+                            <h5>Subs activas</h5>
                             <h2 className="text-success">{active}</h2>
                         </div>
                     </div>
 
                     <div className="col-md-4">
                         <div className="card bg-black border-danger p-3">
-                            <h5>Inactive Subs</h5>
+                            <h5>Subs inactivas</h5>
                             <h2 className="text-danger">{inactive}</h2>
                         </div>
                     </div>
@@ -148,7 +225,7 @@ export const AdminPanel = () => {
                 {/* TABLE */}
                 <div className="card bg-black border-secondary p-3">
 
-                    <h4 className="mb-3">Subscriptions</h4>
+                    <h4 className="mb-3">Subscripciones</h4>
 
                     <div className="table-responsive">
 
@@ -156,13 +233,13 @@ export const AdminPanel = () => {
 
                             <thead>
                                 <tr>
-                                    <th>User</th>
+                                    <th>Usuario</th>
                                     <th>Email</th>
                                     <th>Plan</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Ends</th>
-                                    <th>Actions</th>
+                                    <th>Estado</th>
+                                    <th>Creado</th>
+                                    <th>Fin</th>
+                                    <th>Opciones</th>
                                 </tr>
                             </thead>
 
@@ -210,27 +287,36 @@ export const AdminPanel = () => {
                                                 className="btn btn-sm btn-primary me-2"
                                                 onClick={() => handleEditUser(sub)}
                                             >
-                                                Edit User
+                                                Editar usuario
                                             </button>
 
                                             <button
                                                 className="btn btn-sm btn-info me-2"
                                                 onClick={() => handleEditSubscription(sub)}
                                             >
-                                                Edit Sub
+                                                Editar Sub
                                             </button>
 
-                                            <button className="btn btn-sm btn-warning me-2">
-                                                Note
+                                            <button 
+                                            className={`btn btn-sm me-2 ${sub.user.is_banned ? "btn-warning" : "btn-secondary"}`}
+                                            onClick={() => handleShowNote(sub.user)}
+                                            disabled={!sub.user.is_banned}>
+                                            Ver motivo
                                             </button>
 
                                             {sub.user.is_banned ? (
-                                                <button className="btn btn-sm btn-success">
-                                                    Unban
+                                                <button
+                                                    className="btn btn-sm btn-success"
+                                                    onClick={() => handleBanToggle(sub.user)}
+                                                >
+                                                    Desbanear
                                                 </button>
                                             ) : (
-                                                <button className="btn btn-sm btn-danger">
-                                                    Ban
+                                                <button
+                                                    className="btn btn-sm btn-danger"
+                                                    onClick={() => handleBanToggle(sub.user)}
+                                                >
+                                                    Banear
                                                 </button>
                                             )}
                                         </td>
@@ -369,6 +455,27 @@ export const AdminPanel = () => {
                                             <label className="form-check-label">
                                                 Active
                                             </label>
+                                        </div>
+
+
+                                        <div className="mb-3">
+                                            <label>Creation Day</label>
+
+                                            <input
+                                                type="date"
+                                                className="form-control"
+                                                value={
+                                                    selectedSub?.created_at
+                                                        ? selectedSub.created_at.slice(0, 10)
+                                                        : ""
+                                                }
+                                                onChange={(e) =>
+                                                    setSelectedSub({
+                                                        ...selectedSub,
+                                                        created_at: e.target.value
+                                                    })
+                                                }
+                                            />
                                         </div>
 
                                         <div className="mb-3">

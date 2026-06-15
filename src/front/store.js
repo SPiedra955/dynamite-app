@@ -20,6 +20,22 @@ export const initialStore = () => {
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
 
+    case "updateSubStatus":
+      return {
+        ...store,
+        subs: store.subs.map(sub =>
+          sub.subscription.id === action.payload.subscriptionId
+            ? {
+              ...sub,
+              subscription: {
+                ...sub.subscription,
+                active: action.payload.active
+              }
+            }
+            : sub
+        )
+      };
+
     case 'getSubs':
       return {
         ...store,

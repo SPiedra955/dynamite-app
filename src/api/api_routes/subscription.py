@@ -28,16 +28,24 @@ def get_subscription_plans():
     transform = [plan.serialize() for plan in plans]
     return jsonify({"success": True, "data": transform}), 200
 
-# GET ALL USER SUBSCRIPTIONS 
+# GET ALL USERS SUBSCRIPTIONS
 
 @api.route('/users/subscriptions', methods=['GET'])
+@jwt_required()
 def get_users_subscriptions():
+
+    admin_id = get_jwt_identity()
+    admin = db.session.get(User, admin_id)
+
+    if not admin or admin.role != "admin":
+        return jsonify({"success": False, "msg": "forbidden"}), 403
+
     result = db.session.execute(
         select(User, Subscription, SubscriptionPlan)
         .outerjoin(Subscription, Subscription.user_id == User.id)
         .outerjoin(SubscriptionPlan, Subscription.plan_id == SubscriptionPlan.id)
     ).all()
-    
+
     data = []
 
     for user, sub, plan in result:
@@ -57,7 +65,6 @@ def get_subscriptions():
     return jsonify({"success": True, "data": transform}), 200
 
 # GET SUBSCRIPTIONS BY USER
-
 
 @api.route('/subscriptions/<int:user_id>', methods=['GET'])
 def get_user_subscriptions(user_id):
@@ -127,7 +134,15 @@ def get_subscription_plan(plan_id):
 # BAN USERS
 
 @api.route('/admin/user/<int:user_id>/ban', methods=['PATCH'])
+@jwt_required()
 def ban_user(user_id):
+    
+    admin_id = get_jwt_identity()
+    admin = db.session.get(User, admin_id)
+
+    if not admin or admin.role != "admin":
+        return jsonify({"success": False, "msg": "forbidden"}), 403
+    
     user = User.query.get(user_id)
 
     user.is_banned = True
@@ -136,42 +151,70 @@ def ban_user(user_id):
     return jsonify({"msg": "User banned"})
 
 
-@api.route('/admin/user/<int:user_id>/unban', methods=['PATCH'])
-def unban_user(user_id):
-    user = User.query.get(user_id)
-
-    user.is_banned = False
-    user.ban_reason = None
-    db.session.commit()
-
-    return jsonify({"msg": "User unbanned"})
-
+# UPDATE SUB ACTIVE/DEACTIVATE SUB
 @api.route('/update/subscription/<int:id>', methods=['PUT'])
+@jwt_required()
 def update_subscription_plan(id):
+    
+    admin_id = get_jwt_identity()
+    admin = db.session.get(User, admin_id)
+
+    if not admin or admin.role != "admin":
+        return jsonify({"success": False, "msg": "forbidden"}), 403
+    
     subscription = db.session.get(Subscription, id)
 
     if not subscription:
         return jsonify({"success": False, "msg": "not found"}), 404
 
     body = request.get_json()
-    
+
     subscription.active = body.get(
         "active",
         subscription.active
     )
-
+    created_at = subscription.created_at
     cancel_day = body.get("cancel_day")
 
     if cancel_day:
-        subscription.cancel_day = datetime.strptime(
-            cancel_day,
-            "%Y-%m-%d"
-        )
+        cancel_date = datetime.strptime(cancel_day, "%Y-%m-%d")
+
+    if cancel_date < created_at:
+        return jsonify({
+            "success": False,
+            "msg": "cancel_day cannot be earlier than created_at"
+        }), 400
+
+    subscription.cancel_day = cancel_date
 
     db.session.commit()
-
 
     return jsonify({
         "success": True,
         "data": subscription.serialize()
+    }), 200
+
+
+# BAN USER
+@api.route("/admin/users/<int:user_id>/ban", methods=["PUT"])
+@jwt_required()
+def toggle_ban(user_id):
+    
+    admin_id = get_jwt_identity()
+    admin = db.session.get(User, admin_id)
+
+    if not admin or admin.role != "admin":
+        return jsonify({"success": False, "msg": "forbidden"}), 403
+
+    user = User.query.get(user_id)
+
+    body = request.get_json()
+
+    user.is_banned = body.get("is_banned", False)
+    user.ban_reason = body.get("reason")
+
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Usuario actualizado"
     }), 200
