@@ -140,20 +140,25 @@ Example DATABASE_URL values:
 
 ## 📸 Screenshots
 
-
 * Landing Page
+  
   <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/90bb52e8-d43d-4f98-b326-b92acf7b9cbe" />
 * Authentication
+  
   <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/76f3eb79-603a-4682-9041-2810a118895d" />
 * AI Plan Generator
+  
   <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/d123e221-2023-4034-8836-a392e5b6df16" />
   <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/214518b8-5e27-47c3-9bc1-2164187f1374" />
 * Store
+  
   <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/c803d318-5fa7-4149-aa4b-4f217497c99a" />
 * Admin Dashboard
- <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/6209e25c-9137-4687-bf9f-56d33ed9cbdf" />
+  
+  <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/6209e25c-9137-4687-bf9f-56d33ed9cbdf" />
 * Stripe Payments
-<img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/ff895c72-8f74-4941-baed-5e2afe9023b2" />
+  
+  <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/ff895c72-8f74-4941-baed-5e2afe9023b2" />
 
 
 ## 🔮 Future Improvements
