@@ -152,6 +152,8 @@ Example DATABASE_URL values:
   <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/c803d318-5fa7-4149-aa4b-4f217497c99a" />
 * Admin Dashboard
  <img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/6209e25c-9137-4687-bf9f-56d33ed9cbdf" />
+* Stripe Payments
+<img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/ff895c72-8f74-4941-baed-5e2afe9023b2" />
 
 
 ## 🔮 Future Improvements
