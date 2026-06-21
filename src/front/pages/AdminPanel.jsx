@@ -3,23 +3,36 @@ import { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import services from "../services/apiServices";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 export const AdminPanel = () => {
 
     const { store, dispatch } = useGlobalReducer();
-
-    const loadSubscribers = async () => {
-        const data = await services.getSubscribers();
-
-        dispatch({
-            type: "getSubs",
-            payload: data.data
-        });
-    };
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            navigate("/");
+            return;
+        }
+
+        const loadSubscribers = async () => {
+            try {
+                const data = await services.getSubscribers();
+
+                dispatch({
+                    type: "getSubs",
+                    payload: data.data
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
         loadSubscribers();
-    }, []);
+    }, [navigate, dispatch]);
 
     const subscribers = store.subs || [];
     const total = subscribers.length;
@@ -179,18 +192,9 @@ export const AdminPanel = () => {
     };
 
     return (
-        <div className="d-flex min-vh-100 bg-dark text-white">
+        <div className="container py-5 mt-4 d-flex min-vh-100 bg-dark text-white">
 
-            {/* SIDEBAR */}
-            <div className="bg-black p-3" style={{ width: "220px" }}>
-                <h4 className="mb-4">Admin</h4>
-
-                <p className="text-secondary">Dashboard</p>
-                <p className="text-secondary">Users</p>
-                <p className="text-secondary">Subscriptions</p>
-                <p className="text-secondary">Plans</p>
-            </div>
-
+    
             {/* MAIN */}
             <div className="flex-grow-1 p-4">
 

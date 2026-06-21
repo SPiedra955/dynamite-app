@@ -38,7 +38,11 @@ const Auth = () => {
                     height: Number(formData.height),
                 },
             });
-            navigate("/profile");
+            if (data.data.role === "admin") {
+                navigate("/admin");
+            } else {
+                navigate("/profile");
+            }
         } catch (error) {
             console.error(error);
         }
