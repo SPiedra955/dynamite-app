@@ -1,13 +1,20 @@
 import json
-from openai import OpenAI
 import os
+from openai import OpenAI
+from api.blueprint import api
 from api.blueprint import api
 from flask import request, jsonify
 from api.models import db, User, Product, Order, OrderItem, SubscriptionPlan, Subscription, Payment, Cart, CartItem, MyPlan, DietExerciseType, PaymentStatus
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from sqlalchemy import select
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def get_openai_client():
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY is missing")
+
+    return OpenAI(api_key=api_key)
 
 
 # PROMPTS
@@ -133,6 +140,7 @@ Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura exacta, sin text
 
 
 def call_ia(prompt):
+    client = get_openai_client()
     response = client.chat.completions.create(
         model="gpt-4.1-mini",
         response_format={"type": "json_object"},
