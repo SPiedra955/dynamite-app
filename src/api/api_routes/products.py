@@ -4,7 +4,7 @@ from sqlalchemy import select  # type: ignore
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required  # type: ignore
 from api.blueprint import api
 import pandas as pd
-
+import os
 
 def seed_products_from_csv(path: str):
 
@@ -20,7 +20,7 @@ def seed_products_from_csv(path: str):
             price=row["price"],
             stock=100,
             category=row["product_category"],
-            image="src/front/assets/img/article.jpg"
+            image="https://raw.githubusercontent.com/SPiedra955/dynamite-app/main/src/front/assets/img/article.jpg"
         )
 
         products.append(product)
@@ -34,7 +34,8 @@ def seed_products_from_csv(path: str):
 @api.route("/seed-products", methods=["POST"])
 def seed_products():
     try:
-        file_path = "src/front/datasets/bodybuilding_nutrition_products.csv"
+        file_path = os.path.join(os.path.dirname(__file__),
+        "datasets/bodybuilding_nutrition_products.csv")
 
         count = seed_products_from_csv(file_path)
 
