@@ -1,13 +1,13 @@
-from src.api.api_routes.upload import upload_api
+from api.api_routes.upload import upload_api
 import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
-from src.api.utils import APIException, generate_sitemap
-from src.api.models import db
-from src.api.routes import api
-from src.api.admin import setup_admin
-from src.api.commands import setup_commands
+from api.utils import APIException, generate_sitemap
+from api.models import db
+from api.routes import api
+from api.admin import setup_admin
+from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 # from datetime import timedelta
