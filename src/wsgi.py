@@ -3,7 +3,7 @@
 
 import os
 from flask_migrate import upgrade
-from app import app as application
+from .app import app as application
 
 
 if os.getenv("RUN_DB_UPGRADE_ON_START", "1") == "1":
