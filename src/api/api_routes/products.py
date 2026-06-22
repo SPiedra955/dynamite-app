@@ -34,8 +34,12 @@ def seed_products_from_csv(path: str):
 @api.route("/seed-products", methods=["POST"])
 def seed_products():
     try:
-        file_path = os.path.join(os.path.dirname(__file__),
-        "datasets/bodybuilding_nutrition_products.csv")
+        BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+        file_path = os.path.join(
+            BASE_DIR,
+            "datasets/bodybuilding_nutrition_products.csv"
+        )
 
         count = seed_products_from_csv(file_path)
 
