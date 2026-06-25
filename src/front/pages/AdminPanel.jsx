@@ -60,6 +60,16 @@ export const AdminPanel = () => {
     };
 
     const handleEditSubscription = (sub) => {
+
+        if (!sub.subscription) {
+            Swal.fire({
+                icon: "warning",
+                title: "Sin suscripción",
+                text: "Este usuario no tiene una suscripción asociada"
+            });
+            return;
+        }
+        
         setSelectedSub({
             subscriptionId: sub.subscription.id,
             active: sub.subscription.active,
@@ -90,7 +100,7 @@ export const AdminPanel = () => {
 
     const saveSubscription = async () => {
         try {
-            const createdAt = selectedSub.created_at; // asegúrate de tenerlo
+            const createdAt = selectedSub.created_at;
             const cancelDay = selectedSub.cancel_day;
 
             if (cancelDay && createdAt) {
