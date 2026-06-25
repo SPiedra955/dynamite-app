@@ -53,13 +53,6 @@ const Auth = () => {
                     text: "El correo o la contraseña no son válidos",
                     confirmButtonColor: "#dc3545",
                 });
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Ha ocurrido un problema al conectar con el servidor",
-                    confirmButtonColor: "#dc3545",
-                });
             }
         }
     };
