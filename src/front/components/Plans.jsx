@@ -76,9 +76,15 @@ const Plans = () => {
 
   const handlePlan = (plan) => {
     if (!token) {
-      navigate("/authentication");
+      Swal.fire({
+        icon: "warning",
+        title: "Debes iniciar sesión",
+        text: "Inicia sesión para continuar con la compra",
+        confirmButtonColor: "#dc3545",
+      });
       return;
     }
+
     navigate("/encuesta", { state: { plan_id: plan.id, tipos: getType(plan) } });
   };
 

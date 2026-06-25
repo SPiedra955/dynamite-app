@@ -9,6 +9,18 @@ export const AdminPanel = () => {
 
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
+    const loadSubscribers = async () => {
+        try {
+            const data = await services.getSubscribers();
+
+            dispatch({
+                type: "getSubs",
+                payload: data.data
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -17,19 +29,6 @@ export const AdminPanel = () => {
             navigate("/");
             return;
         }
-
-        const loadSubscribers = async () => {
-            try {
-                const data = await services.getSubscribers();
-
-                dispatch({
-                    type: "getSubs",
-                    payload: data.data
-                });
-            } catch (error) {
-                console.error(error);
-            }
-        };
 
         loadSubscribers();
     }, [navigate, dispatch]);
@@ -194,7 +193,7 @@ export const AdminPanel = () => {
     return (
         <div className="container py-5 mt-4 d-flex min-vh-100 bg-dark text-white">
 
-    
+
             {/* MAIN */}
             <div className="flex-grow-1 p-4">
 
@@ -301,11 +300,11 @@ export const AdminPanel = () => {
                                                 Editar Sub
                                             </button>
 
-                                            <button 
-                                            className={`btn btn-sm me-2 ${sub.user.is_banned ? "btn-warning" : "btn-secondary"}`}
-                                            onClick={() => handleShowNote(sub.user)}
-                                            disabled={!sub.user.is_banned}>
-                                            Ver motivo
+                                            <button
+                                                className={`btn btn-sm me-2 ${sub.user.is_banned ? "btn-warning" : "btn-secondary"}`}
+                                                onClick={() => handleShowNote(sub.user)}
+                                                disabled={!sub.user.is_banned}>
+                                                Ver motivo
                                             </button>
 
                                             {sub.user.is_banned ? (

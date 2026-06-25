@@ -2,6 +2,7 @@ import { useState } from "react";
 import authService from "../services/apiServices";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Auth = () => {
     const { dispatch } = useGlobalReducer();
@@ -45,6 +46,21 @@ const Auth = () => {
             }
         } catch (error) {
             console.error(error);
+            if (error.response?.status === 401) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Credenciales incorrectas",
+                    text: "El correo o la contraseña no son válidos",
+                    confirmButtonColor: "#dc3545",
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Ha ocurrido un problema al conectar con el servidor",
+                    confirmButtonColor: "#dc3545",
+                });
+            }
         }
     };
 

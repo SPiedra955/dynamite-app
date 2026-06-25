@@ -13,7 +13,7 @@ services.auth = async (formData) => {
         });
 
         const text = await resp.text();
-        console.log(text)
+        // console.log(text)
 
         let data;
 
