@@ -103,57 +103,158 @@ const Plans = () => {
     );
   }
 
+  // return (
+  //   <div className="bg-dark min-vh-100 py-5">
+  //     <div className="container">
+  //       <div className="text-center my-5">
+  //         <h2 className="text-white">Elige tu plan</h2>
+  //         <div className="border border-danger border-top my-3 mx-auto w-25"></div>
+  //         <p className="text-white-50">Genera tu plan de dieta y ejercicio personalizado con IA</p>
+  //       </div>
+
+  //       <div className="row g-4 justify-content-center">
+  //         {plans.map((plan) => (
+  //           <div className="col-12 col-md-4" key={plan.id}>
+  //             <div className="h-100 rounded-3 border border-secondary p-4 d-flex flex-column">
+
+  //               <h5 className="text-white mb-0">{plan.name}</h5>
+  //               <div className="border border-danger border-top my-3"></div>
+
+  //               <div className="mb-3">
+  //                 <span className="text-white fw-bold fs-3">{plan.price}</span>
+  //                 <span className="text-white-50 small"> / mes</span>
+  //               </div>
+
+  //               {plan.description && (
+  //                 <div
+  //                   className="text-white-50 small mb-3"
+  //                   dangerouslySetInnerHTML={{
+  //                     __html: plan.description,
+  //                   }}
+  //                 />
+  //               )}
+
+  //               {/* Lista de beneficios */}
+  //               <ul className="list-unstyled flex-grow-1 mb-4">
+  //                 {(planBenefits[plan.name] || []).map((benefit) => (
+  //                   <li key={benefit} className="text-white-50 small mb-2">
+  //                     <span className="text-danger fw-bold me-2">✓</span>
+  //                     {benefit}
+  //                   </li>
+  //                 ))}
+  //               </ul>
+
+  //               <button
+  //                 className="btn btn-danger rounded-pill px-5 mt-auto w-100"
+  //                 onClick={async () => {
+  //                   if (!token) {
+  //                     navigate("/authentication");
+  //                     return;
+  //                   }
+
+  //                   try {
+  //                     const res = await fetch(`${url}/api/create-subscription-checkout`, {
+  //                       method: "POST",
+  //                       headers: {
+  //                         Authorization: `Bearer ${token}`,
+  //                         "Content-Type": "application/json",
+  //                       },
+  //                       body: JSON.stringify({
+  //                         email: store.user.email,
+  //                         id: plan.id,
+  //                       }),
+  //                     });
+
+  //                     const data = await res.json();
+
+  //                     if (data.url) {
+  //                       window.location.href = data.url;
+  //                     }
+  //                   } catch (error) {
+  //                     console.error(error);
+  //                   }
+  //                 }}
+  //               >
+  //                 Elegir plan
+  //               </button>
+  //             </div>
+  //           </div>
+  //         ))}
+  //       </div>
+
+  //       {!token && (
+  //         <p className="text-center text-white-50 small mt-4">
+  //           * Necesitas iniciar sesión para elegir un plan
+  //         </p>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
   return (
-    <div className="bg-dark min-vh-100 py-5">
-      <div className="container">
-        <div className="text-center my-5">
-          <h2 className="text-white">Elige tu plan</h2>
-          <div className="border border-danger border-top my-3 mx-auto w-25"></div>
-          <p className="text-white-50">Genera tu plan de dieta y ejercicio personalizado con IA</p>
+    <div className="min-h-screen bg-gray-950 py-16">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-16 text-center">
+          <h2 className="text-4xl font-bold text-white">Elige tu plan</h2>
+
+          <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-red-600"></div>
+
+          <p className="mt-4 text-gray-400">
+            Genera tu plan de dieta y ejercicio personalizado con IA
+          </p>
         </div>
 
-        <div className="row g-4 justify-content-center">
+        <div className="grid gap-8 md:grid-cols-3">
           {plans.map((plan) => (
-            <div className="col-12 col-md-4" key={plan.id}>
-              <div className="h-100 rounded-3 border border-secondary p-4 d-flex flex-column">
+            <div
+              key={plan.id}
+              className="flex h-full flex-col rounded-2xl border border-gray-700 bg-gray-900 p-8 shadow-lg transition duration-300 hover:-translate-y-2 hover:border-red-500"
+            >
+              <h5 className="text-2xl font-semibold text-white">
+                {plan.name}
+              </h5>
 
-                <h5 className="text-white mb-0">{plan.name}</h5>
-                <div className="border border-danger border-top my-3"></div>
+              <div className="my-4 h-1 w-16 rounded-full bg-red-600"></div>
 
-                <div className="mb-3">
-                  <span className="text-white fw-bold fs-3">{plan.price}</span>
-                  <span className="text-white-50 small"> / mes</span>
-                </div>
+              <div className="mb-5">
+                <span className="text-4xl font-bold text-white">
+                  {plan.price}
+                </span>
+                <span className="ml-1 text-sm text-gray-400">/ mes</span>
+              </div>
 
-                {plan.description && (
-                  <div
-                    className="text-white-50 small mb-3"
-                    dangerouslySetInnerHTML={{
-                      __html: plan.description,
-                    }}
-                  />
-                )}
+              {plan.description && (
+                <div
+                  className="mb-5 text-sm text-gray-400"
+                  dangerouslySetInnerHTML={{
+                    __html: plan.description,
+                  }}
+                />
+              )}
 
-                {/* Lista de beneficios */}
-                <ul className="list-unstyled flex-grow-1 mb-4">
-                  {(planBenefits[plan.name] || []).map((benefit) => (
-                    <li key={benefit} className="text-white-50 small mb-2">
-                      <span className="text-danger fw-bold me-2">✓</span>
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
+              <ul className="mb-6 flex-grow space-y-3">
+                {(planBenefits[plan.name] || []).map((benefit) => (
+                  <li
+                    key={benefit}
+                    className="flex items-start text-sm text-gray-300"
+                  >
+                    <span className="mr-3 font-bold text-red-500">✓</span>
+                    {benefit}
+                  </li>
+                ))}
+              </ul>
 
-                <button
-                  className="btn btn-danger rounded-pill px-5 mt-auto w-100"
-                  onClick={async () => {
-                    if (!token) {
-                      navigate("/authentication");
-                      return;
-                    }
+              <button
+                className="mt-auto w-full rounded-full bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700"
+                onClick={async () => {
+                  if (!token) {
+                    navigate("/authentication");
+                    return;
+                  }
 
-                    try {
-                      const res = await fetch(`${url}/api/create-subscription-checkout`, {
+                  try {
+                    const res = await fetch(
+                      `${url}/api/create-subscription-checkout`,
+                      {
                         method: "POST",
                         headers: {
                           Authorization: `Bearer ${token}`,
@@ -163,27 +264,27 @@ const Plans = () => {
                           email: store.user.email,
                           id: plan.id,
                         }),
-                      });
-
-                      const data = await res.json();
-
-                      if (data.url) {
-                        window.location.href = data.url;
                       }
-                    } catch (error) {
-                      console.error(error);
+                    );
+
+                    const data = await res.json();
+
+                    if (data.url) {
+                      window.location.href = data.url;
                     }
-                  }}
-                >
-                  Elegir plan
-                </button>
-              </div>
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }}
+              >
+                Elegir plan
+              </button>
             </div>
           ))}
         </div>
 
         {!token && (
-          <p className="text-center text-white-50 small mt-4">
+          <p className="mt-8 text-center text-sm text-gray-500">
             * Necesitas iniciar sesión para elegir un plan
           </p>
         )}

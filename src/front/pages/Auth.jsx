@@ -65,181 +65,161 @@ const Auth = () => {
     const isLogin = formData.type === "login";
 
     return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center bg-black py-5">
-            <div className="w-100 px-3" style={{ maxWidth: 440 }}>
+        <div className="h-screen flex items-center justify-center bg-black overflow-hidden">
 
-                {/* Cabecera */}
-                <div className="d-flex align-items-center gap-3 p-4 bg-dark rounded-top-4 border-bottom border-secondary">
-                    <div className="d-flex align-items-center justify-content-center rounded-circle bg-danger flex-shrink-0"
-                        style={{ width: 48, height: 48 }}>
-                        <i className="bi bi-person-fill text-white fs-5"></i>
+            <div className="w-full max-w-md px-4">
+
+                {/* HEADER */}
+                <div className="flex items-center gap-4 p-4 bg-zinc-900 rounded-t-2xl border-b border-zinc-700">
+
+                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
+                        <i className="bi bi-person-fill text-white text-lg"></i>
                     </div>
+
                     <div>
-                        <p className="mb-0 text-white fw-bold fs-5">
+                        <p className="text-white font-bold text-lg">
                             {isLogin ? "Iniciar sesión" : "Crear cuenta"}
                         </p>
-                        <p className="mb-0 text-secondary small">
+
+                        <p className="text-gray-400 text-sm">
                             {isLogin ? "Accede a tu cuenta" : "Rellena tus datos para registrarte"}
                         </p>
                     </div>
+
                 </div>
 
-                {/* Formulario */}
+                {/* FORM */}
                 <form
                     onSubmit={handleSubmit}
-                    className="p-4 bg-dark rounded-bottom-4"
+                    className="p-5 bg-zinc-900 rounded-b-2xl"
                 >
-                    <p className="text-danger text-uppercase fw-semibold small mb-3">
+
+                    <p className="text-red-500 uppercase font-semibold text-sm mb-4">
                         {isLogin ? "Acceso" : "Registro"}
                     </p>
 
-                    <div className="row g-3">
+                    <div className="space-y-4">
 
                         {/* EMAIL */}
-                        <div className="col-12">
-                            <label className="form-label text-secondary text-uppercase small fw-semibold">Email</label>
+                        <div>
+                            <label className="text-gray-400 uppercase text-xs font-semibold">
+                                Email
+                            </label>
+
                             <input
                                 type="email"
-                                className="form-control bg-black text-white border-secondary"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="tu@email.com"
+                                className="w-full mt-1 bg-black text-white border border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:border-red-500"
                                 required
-                                minLength={5}
-                                maxLength={100}
-                                pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-                                title="Introduce un email válido"
                             />
                         </div>
 
                         {/* PASSWORD */}
-                        <div className="col-12">
-                            <label className="form-label text-secondary text-uppercase small fw-semibold">Contraseña</label>
+                        <div>
+                            <label className="text-gray-400 uppercase text-xs font-semibold">
+                                Contraseña
+                            </label>
+
                             <input
                                 type="password"
-                                className="form-control bg-black text-white border-secondary"
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
                                 placeholder="••••••••"
+                                className="w-full mt-1 bg-black text-white border border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:border-red-500"
                                 required
-                                minLength={4}
-                                maxLength={20}
-                                pattern="^[A-Za-z0-9]{4,20}$"
-                                title="Solo letras y números, entre 4 y 20 caracteres"
                             />
                         </div>
 
-                        {/* CAMPOS SOLO REGISTRO */}
+                        {/* EXTRA FIELDS */}
                         {!isLogin && (
                             <>
-                                <div className="col-12">
-                                    <hr className="border-secondary" />
-                                    <p className="text-danger text-uppercase fw-semibold small mb-3">Datos personales</p>
-                                </div>
+                                <div className="border-t border-zinc-700 pt-4 mt-4">
+                                    <p className="text-red-500 uppercase font-semibold text-sm mb-3">
+                                        Datos personales
+                                    </p>
 
-                                <div className="col-12">
-                                    <label className="form-label text-secondary text-uppercase small fw-semibold">Nombre</label>
-                                    <input
-                                        type="text"
-                                        className="form-control bg-black text-white border-secondary"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        placeholder="Tu nombre"
-                                        required
-                                        minLength={2}
-                                        maxLength={50}
-                                        pattern="^[A-Za-zÀ-ÿ\s]+$"
-                                        title="Solo letras"
-                                    />
-                                </div>
+                                    <div className="space-y-4">
 
-                                <div className="col-4">
-                                    <label className="form-label text-secondary text-uppercase small fw-semibold">Edad</label>
-                                    <input
-                                        type="number"
-                                        className="form-control bg-black text-white border-secondary"
-                                        name="age"
-                                        value={formData.age}
-                                        onChange={handleChange}
-                                        placeholder="25"
-                                        required
-                                        min={10}
-                                        max={100}
-                                    />
-                                </div>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            placeholder="Nombre"
+                                            className="w-full bg-black text-white border border-zinc-700 rounded-lg px-3 py-2 focus:border-red-500 focus:outline-none"
+                                        />
 
-                                <div className="col-4">
-                                    <label className="form-label text-secondary text-uppercase small fw-semibold">Peso (kg)</label>
-                                    <input
-                                        type="number"
-                                        className="form-control bg-black text-white border-secondary"
-                                        name="weight"
-                                        value={formData.weight}
-                                        onChange={handleChange}
-                                        placeholder="70"
-                                        required
-                                        min={20}
-                                        max={300}
-                                        step="0.1"
-                                    />
-                                </div>
+                                        <div className="grid grid-cols-3 gap-2">
 
-                                <div className="col-4">
-                                    <label className="form-label text-secondary text-uppercase small fw-semibold">Altura (cm)</label>
-                                    <input
-                                        type="number"
-                                        className="form-control bg-black text-white border-secondary"
-                                        name="height"
-                                        value={formData.height}
-                                        onChange={handleChange}
-                                        placeholder="175"
-                                        required
-                                        min={50}
-                                        max={250}
-                                    />
-                                </div>
+                                            <input
+                                                type="number"
+                                                name="age"
+                                                value={formData.age}
+                                                placeholder="Edad"
+                                                onChange={handleChange}
+                                                className="bg-black text-white border border-zinc-700 rounded-lg px-2 py-2 focus:border-red-500"
+                                            />
 
-                                <div className="col-12">
-                                    <label className="form-label text-secondary text-uppercase small fw-semibold">Objetivo</label>
-                                    <input
-                                        type="text"
-                                        className="form-control bg-black text-white border-secondary"
-                                        name="objective"
-                                        value={formData.objective}
-                                        onChange={handleChange}
-                                        placeholder="Perder peso, ganar músculo..."
-                                        required
-                                        minLength={3}
-                                        maxLength={100}
-                                    />
+                                            <input
+                                                type="number"
+                                                name="weight"
+                                                value={formData.weight}
+                                                placeholder="Peso"
+                                                onChange={handleChange}
+                                                className="bg-black text-white border border-zinc-700 rounded-lg px-2 py-2 focus:border-red-500"
+                                            />
+
+                                            <input
+                                                type="number"
+                                                name="height"
+                                                value={formData.height}
+                                                placeholder="Altura"
+                                                onChange={handleChange}
+                                                className="bg-black text-white border border-zinc-700 rounded-lg px-2 py-2 focus:border-red-500"
+                                            />
+
+                                        </div>
+
+                                        <input
+                                            type="text"
+                                            name="objective"
+                                            value={formData.objective}
+                                            onChange={handleChange}
+                                            placeholder="Objetivo"
+                                            className="w-full bg-black text-white border border-zinc-700 rounded-lg px-3 py-2 focus:border-red-500"
+                                        />
+
+                                    </div>
                                 </div>
                             </>
                         )}
 
-                        {/* BOTÓN SUBMIT */}
-                        <div className="col-12 mt-2">
-                            <button type="submit" className="btn btn-danger w-100 py-3 fw-semibold">
-                                {isLogin ? "Iniciar sesión" : "Crear cuenta"}
-                            </button>
-                        </div>
+                        {/* BUTTON */}
+                        <button
+                            type="submit"
+                            className="w-full bg-red-600 hover:bg-red-700 transition text-white font-semibold py-3 rounded-lg mt-4"
+                        >
+                            {isLogin ? "Iniciar sesión" : "Crear cuenta"}
+                        </button>
 
                     </div>
                 </form>
 
-                {/* Cambiar entre login y register */}
-                <div className="text-center mt-3">
-                    <span className="text-secondary small">
-                        {isLogin ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}
+                {/* FOOTER */}
+                <div className="text-center mt-4">
+                    <span className="text-gray-400 text-sm">
+                        {isLogin ? "¿No tienes cuenta? " : "¿Ya tienes cuenta?"}
                     </span>
+
                     <button
-                        type="button"
-                        className="btn btn-link text-danger p-0 ms-2 small text-decoration-none"
                         onClick={handleType}
+                        className="text-red-500 ml-2 text-sm hover:underline"
                     >
-                        {isLogin ? "Regístrate" : "Inicia sesión"}
+                        {isLogin ? " Regístrate" : "Inicia sesión"}
                     </button>
                 </div>
 
